@@ -26,6 +26,12 @@ const PERMISSIONS = {
 
   // Reader comments (moderation on the public site)
   COMMENT_MODERATE: "comment:moderate",
+
+  // Media library (images & videos)
+  MEDIA_READ: "media:read",
+  MEDIA_CREATE: "media:create",
+  MEDIA_UPDATE: "media:update",
+  MEDIA_DELETE: "media:delete",
 };
 
 // Grouped view used by the API/frontend so the UI can render
@@ -76,6 +82,16 @@ const PERMISSION_GROUPS = [
     resource: "comment",
     label: "Comments",
     permissions: [PERMISSIONS.COMMENT_MODERATE],
+  },
+  {
+    resource: "media",
+    label: "Media",
+    permissions: [
+      PERMISSIONS.MEDIA_READ,
+      PERMISSIONS.MEDIA_CREATE,
+      PERMISSIONS.MEDIA_UPDATE,
+      PERMISSIONS.MEDIA_DELETE,
+    ],
   },
 ];
 

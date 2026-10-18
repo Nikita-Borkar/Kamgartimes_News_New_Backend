@@ -20,6 +20,10 @@ const EDITOR_PERMISSIONS = [
   "article:delete",
   "article:publish",
   "comment:moderate",
+  "media:read",
+  "media:create",
+  "media:update",
+  "media:delete",
 ];
 
 const USER_PERMISSIONS = ["article:read"];
