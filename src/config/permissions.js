@@ -22,6 +22,10 @@ const PERMISSIONS = {
   ARTICLE_CREATE: "article:create",
   ARTICLE_UPDATE: "article:update",
   ARTICLE_DELETE: "article:delete",
+  ARTICLE_PUBLISH: "article:publish",
+
+  // Reader comments (moderation on the public site)
+  COMMENT_MODERATE: "comment:moderate",
 };
 
 // Grouped view used by the API/frontend so the UI can render
@@ -65,7 +69,13 @@ const PERMISSION_GROUPS = [
       PERMISSIONS.ARTICLE_CREATE,
       PERMISSIONS.ARTICLE_UPDATE,
       PERMISSIONS.ARTICLE_DELETE,
+      PERMISSIONS.ARTICLE_PUBLISH,
     ],
+  },
+  {
+    resource: "comment",
+    label: "Comments",
+    permissions: [PERMISSIONS.COMMENT_MODERATE],
   },
 ];
 
