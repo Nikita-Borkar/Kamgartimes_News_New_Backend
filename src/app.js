@@ -11,24 +11,23 @@ const app = express();
 // Mount Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
-// Routes
-const apiRoutes = require("./routes/index");
-
-app.use("/api/v1", apiRoutes);
-
-app.all("all", notFound);
-app.use(globalErrorHandler);
+// Body parsers (must come before routes so req.body is populated)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use(helmet());
-
 app.use(
   cors({
     origin: "http://localhost:3000",
   }),
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Routes
+const apiRoutes = require("./routes/index");
+app.use("/api/v1", apiRoutes);
+
+app.all("all", notFound);
+app.use(globalErrorHandler);
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,

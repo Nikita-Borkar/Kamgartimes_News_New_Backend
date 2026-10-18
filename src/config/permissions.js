@@ -1,7 +1,6 @@
 const PERMISSIONS = {
   // User management
   USER_READ: "user:read",
-  USER_CREATE: "user:create",
   USER_UPDATE: "user:update",
   USER_DELETE: "user:delete",
   USER_ASSIGN_ROLE: "user:assign_role",
@@ -17,6 +16,12 @@ const PERMISSIONS = {
   CATEGORY_CREATE: "category:create",
   CATEGORY_UPDATE: "category:update",
   CATEGORY_DELETE: "category:delete",
+
+  // Articles / news content
+  ARTICLE_READ: "article:read",
+  ARTICLE_CREATE: "article:create",
+  ARTICLE_UPDATE: "article:update",
+  ARTICLE_DELETE: "article:delete",
 };
 
 // Grouped view used by the API/frontend so the UI can render
@@ -27,7 +32,6 @@ const PERMISSION_GROUPS = [
     label: "Users",
     permissions: [
       PERMISSIONS.USER_READ,
-      PERMISSIONS.USER_CREATE,
       PERMISSIONS.USER_UPDATE,
       PERMISSIONS.USER_DELETE,
       PERMISSIONS.USER_ASSIGN_ROLE,
@@ -51,6 +55,16 @@ const PERMISSION_GROUPS = [
       PERMISSIONS.CATEGORY_CREATE,
       PERMISSIONS.CATEGORY_UPDATE,
       PERMISSIONS.CATEGORY_DELETE,
+    ],
+  },
+  {
+    resource: "article",
+    label: "Articles",
+    permissions: [
+      PERMISSIONS.ARTICLE_READ,
+      PERMISSIONS.ARTICLE_CREATE,
+      PERMISSIONS.ARTICLE_UPDATE,
+      PERMISSIONS.ARTICLE_DELETE,
     ],
   },
 ];

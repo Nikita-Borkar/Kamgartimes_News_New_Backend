@@ -3,7 +3,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /health:
+ * /:
  *   get:
  *     summary: Health check endpoint
  *     tags: [Health]
@@ -19,7 +19,7 @@ const router = express.Router();
  *                 statusCode: { type: integer, example: 200 }
  *                 message: { type: string, example: "Kamagar Times API is running" }
  */
-router.get("/health", (req, res) => {
+router.get("/", (req, res) => {
   res.status(200).json({
     success: true,
     statusCode: 200,
