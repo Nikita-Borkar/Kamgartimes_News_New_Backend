@@ -4,11 +4,15 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const notFound = require("./middlewares/notFoundMiddleware");
 const globalErrorHandler = require("./middlewares/errorMiddleware");
+const { swaggerUi, swaggerSpec } = require("./docs/swagger");
+
+const app = express();
+
+// Mount Swagger UI
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Routes
 const apiRoutes = require("./routes/index");
-
-const app = express();
 
 app.use("/api/v1", apiRoutes);
 
