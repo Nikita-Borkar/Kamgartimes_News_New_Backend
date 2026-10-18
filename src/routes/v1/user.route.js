@@ -65,6 +65,27 @@ const { assignRoleSchema } = require("../../dtos/userDto");
  *         description: Role assigned
  */
 
+/**
+ * @swagger
+ * /users/{id}:
+ *   delete:
+ *     summary: Deactivate a user
+ *     tags: [Users]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: User deactivated successfully
+ *       403:
+ *         description: Forbidden - insufficient permissions
+ *       404:
+ *         description: User not found
+ */
+
 router.get("/", authenticate, loadPermissions, requirePermission("user:read"), list);
 router.get("/:id", authenticate, loadPermissions, requirePermission("user:read"), getById);
 router.put("/:id/role", authenticate, loadPermissions, requirePermission("user:assign_role"), validate(assignRoleSchema), assignRole);
