@@ -4,6 +4,8 @@ const User = require("../models/User");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const ForbiddenError = require("../errors/customErrors/ForbiddenError");
 
+const { PERMISSION_GROUPS, ALL_PERMISSIONS } = require("../config/permissions");
+
 const listRoles = async () => {
   const roles = await Role.find({}).sort({ createdAt: -1 });
   return roles;
@@ -66,4 +68,46 @@ const deleteRole = async (id) => {
   return { id };
 };
 
-module.exports = { listRoles, getRoleById, createRole, updateRole, deleteRole };
+const getPermissionsDropdown = async () => {
+  const groups = PERMISSION_GROUPS.map((group) => {
+    const permissions = group.permissions.map((perm) => {
+      const parts = perm.split(":");
+      const action = parts[1] || parts[0];
+      const actionLabel = action
+        .split("_")
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(" ");
+
+      return {
+        value: perm,
+        label: `${group.label}: ${actionLabel}`,
+        action,
+        actionLabel,
+        resource: group.resource,
+      };
+    });
+
+    return {
+      resource: group.resource,
+      label: group.label,
+      permissions,
+    };
+  });
+
+  const options = groups.flatMap((g) => g.permissions);
+
+  return {
+    groups,
+    options,
+    allPermissions: ALL_PERMISSIONS,
+  };
+};
+
+module.exports = {
+  listRoles,
+  getRoleById,
+  createRole,
+  updateRole,
+  deleteRole,
+  getPermissionsDropdown,
+};

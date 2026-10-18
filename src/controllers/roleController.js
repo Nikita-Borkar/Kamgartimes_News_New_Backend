@@ -4,6 +4,7 @@ const {
   createRole,
   updateRole,
   deleteRole,
+  getPermissionsDropdown,
 } = require("../services/roleService");
 const successResponse = require("../errors/responses/successResponse");
 
@@ -62,4 +63,17 @@ const remove = async (req, res, next) => {
   }
 };
 
-module.exports = { list, getById, create, update, remove };
+const getPermissions = async (req, res, next) => {
+  try {
+    const data = await getPermissionsDropdown();
+    return res
+      .status(200)
+      .json(
+        new successResponse(200, "Permissions dropdown fetched successfully", data)
+      );
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { list, getById, create, update, remove, getPermissions };

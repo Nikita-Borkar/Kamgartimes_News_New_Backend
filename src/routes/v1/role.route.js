@@ -1,10 +1,21 @@
 const express = require("express");
 const router = express.Router();
 
-const { list, getById, create, update, remove } = require("../../controllers/roleController");
+const {
+  list,
+  getById,
+  create,
+  update,
+  remove,
+  getPermissions,
+} = require("../../controllers/roleController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
+const {
+  loadPermissions,
+  requirePermission,
+  requireAnyPermission,
+} = require("../../middlewares/permissionMiddleware");
 const { createRoleSchema, updateRoleSchema } = require("../../dtos/roleDto");
 
 /**
@@ -18,6 +29,19 @@ const { createRoleSchema, updateRoleSchema } = require("../../dtos/roleDto");
  *     responses:
  *       200:
  *         description: Roles list
+ */
+
+/**
+ * @swagger
+ * /roles/permissions:
+ *   get:
+ *     summary: Get permissions list for role creation/assignment dropdown
+ *     tags: [Roles]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Permissions dropdown list
  */
 
 /**
@@ -108,6 +132,20 @@ const { createRoleSchema, updateRoleSchema } = require("../../dtos/roleDto");
  */
 
 router.get("/", authenticate, loadPermissions, requirePermission("role:read"), list);
+router.get(
+  "/permissions",
+  authenticate,
+  loadPermissions,
+  requireAnyPermission("role:read", "role:create"),
+  getPermissions
+);
+router.get(
+  "/permissions-dropdown",
+  authenticate,
+  loadPermissions,
+  requireAnyPermission("role:read", "role:create"),
+  getPermissions
+);
 router.get("/:id", authenticate, loadPermissions, requirePermission("role:read"), getById);
 router.post("/", authenticate, loadPermissions, requirePermission("role:create"), validate(createRoleSchema), create);
 router.put("/:id", authenticate, loadPermissions, requirePermission("role:update"), validate(updateRoleSchema), update);
