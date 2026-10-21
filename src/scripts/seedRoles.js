@@ -64,27 +64,18 @@ const roles = [
 ];
 
 const seedRoles = async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log("MongoDB connected for seeding");
-
-    for (const roleData of roles) {
-      await Role.findOneAndUpdate(
-        { name: roleData.name },
-        { $set: roleData },
-        { upsert: true, returnDocument: "after" },
-      );
-      console.log(
-        `Seeded role: ${roleData.name} (${roleData.permissions.length} permissions)`,
-      );
-    }
-
-    console.log("Role seeding completed");
-    process.exit(0);
-  } catch (err) {
-    console.error("Seed error:", err.message);
-    process.exit(1);
+  for (const roleData of roles) {
+    await Role.findOneAndUpdate(
+      { name: roleData.name },
+      { $set: roleData },
+      { upsert: true, returnDocument: "after" },
+    );
+    console.log(
+      `Seeded role: ${roleData.name} (${roleData.permissions.length} permissions)`,
+    );
   }
+
+  console.log("Role seeding completed");
 };
 
 const seedAdmin = async () => {
@@ -125,5 +116,58 @@ const seedAdmin = async () => {
   }
 };
 
-seedAdmin();
-seedRoles();
+const seedEditor = async () => {
+  const email = process.env.EDITOR_EMAIL;
+  if (!email) {
+    console.log("  - EDITOR_EMAIL not set, skipping editor user step");
+    return;
+  }
+
+  const normalisedEmail = email.toLowerCase();
+  let user = await User.findOne({ email: normalisedEmail });
+
+  if (!user) {
+    const password = process.env.EDITOR_PASSWORD;
+    if (!password) {
+      console.log(
+        `  - user ${normalisedEmail} does not exist and EDITOR_PASSWORD is not set, skipping`,
+      );
+      return;
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user = await User.create({
+      name: process.env.EDITOR_NAME || "Senior Editor",
+      email: normalisedEmail,
+      password: hashedPassword,
+      role: "editor",
+    });
+    console.log(`  - created editor user ${normalisedEmail}`);
+    return;
+  }
+
+  if (user.role !== "editor") {
+    user.role = "editor";
+    await user.save();
+    console.log(`  - set ${normalisedEmail} role to editor`);
+  } else {
+    console.log(`  - ${normalisedEmail} is already an editor`);
+  }
+};
+
+const run = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("MongoDB connected for seeding");
+
+    await seedRoles();
+    await seedAdmin();
+    await seedEditor();
+
+    process.exit(0);
+  } catch (err) {
+    console.error("Seed error:", err.message);
+    process.exit(1);
+  }
+};
+
+run();
