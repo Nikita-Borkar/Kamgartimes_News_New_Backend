@@ -558,6 +558,24 @@
         }
       }
     },
+    "/roles/permissions": {
+      "get": {
+        "summary": "Get permissions list for role creation/assignment dropdown",
+        "tags": [
+          "Roles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Permissions dropdown list"
+          }
+        }
+      }
+    },
     "/roles/{id}": {
       "get": {
         "summary": "Get a role by ID",
@@ -628,6 +646,19 @@
         "responses": {
           "200": {
             "description": "Role deleted"
+          }
+        }
+      }
+    },
+    "/public/notices/ticker": {
+      "get": {
+        "summary": "Active notice ticker feed for the reader site (public)",
+        "tags": [
+          "Public Notices"
+        ],
+        "responses": {
+          "200": {
+            "description": "Active notices within their scheduling window, highest priority first"
           }
         }
       }
@@ -1005,6 +1036,242 @@
         "responses": {
           "201": {
             "description": "Comment created"
+          }
+        }
+      }
+    },
+    "/notices": {
+      "get": {
+        "summary": "List notices (admin)",
+        "tags": [
+          "Notices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Case-insensitive search on notice title"
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notices list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a notice",
+        "tags": [
+          "Notices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "message"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "example": "Office closed on Diwali"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "All offices will remain closed on 20th Oct."
+                  },
+                  "linkUrl": {
+                    "type": "string",
+                    "example": "/news/diwali-holiday-order"
+                  },
+                  "linkText": {
+                    "type": "string",
+                    "example": "Read Order"
+                  },
+                  "priority": {
+                    "type": "number",
+                    "example": 10
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "startsAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-10-18T00:00:00.000Z"
+                  },
+                  "endsAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-10-22T23:59:59.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Notice created"
+          },
+          "400": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/notices/{id}": {
+      "get": {
+        "summary": "Get a notice by ID (admin)",
+        "tags": [
+          "Notices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notice details"
+          },
+          "404": {
+            "description": "Notice not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a notice",
+        "tags": [
+          "Notices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  },
+                  "linkUrl": {
+                    "type": "string"
+                  },
+                  "linkText": {
+                    "type": "string"
+                  },
+                  "priority": {
+                    "type": "number"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "startsAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endsAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Notice updated"
+          },
+          "404": {
+            "description": "Notice not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a notice",
+        "tags": [
+          "Notices"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notice deleted"
+          },
+          "404": {
+            "description": "Notice not found"
           }
         }
       }

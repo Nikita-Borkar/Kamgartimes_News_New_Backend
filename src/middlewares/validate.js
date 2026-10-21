@@ -1,8 +1,17 @@
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 
-const validate = (schema) => (req, res, next) => {
+// Validates req.body by default; pass "query" to validate req.query instead.
+// GET requests carry no body, so an undefined body is treated as {} — this keeps
+// query-only schemas usable on list endpoints (they read req.query).
+const validate = (schema, source = "body") => (req, res, next) => {
   try {
-    req.validatedBody = schema.parse(req.body);
+    const raw = source === "query" ? req.query : req.body ?? {};
+    const parsed = schema.parse(raw);
+    if (source === "query") {
+      req.validatedQuery = parsed;
+    } else {
+      req.validatedBody = parsed;
+    }
     next();
   } catch (err) {
     if (err.name === "ZodError") {

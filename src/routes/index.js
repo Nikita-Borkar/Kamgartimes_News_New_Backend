@@ -11,6 +11,8 @@ const publicArticleRoutes = require("./v1/publicArticle.route");
 const imageMediaRoutes = require("./v1/imageMedia.route");
 const videoMediaRoutes = require("./v1/videoMedia.route");
 const publicMediaRoutes = require("./v1/publicMedia.route");
+const noticeRoutes = require("./v1/notice.route");
+const publicNoticeRoutes = require("./v1/publicNotice.route");
 
 router.use("/auth", authRoutes);
 router.use("/health", healthRoutes);
@@ -22,5 +24,7 @@ router.use("/public/articles", publicArticleRoutes);
 router.use("/media/images", imageMediaRoutes);
 router.use("/media/videos", videoMediaRoutes);
 router.use("/public/media", publicMediaRoutes);
+router.use("/notices", noticeRoutes);
+router.use("/public/notices", publicNoticeRoutes);
 
 module.exports = router;

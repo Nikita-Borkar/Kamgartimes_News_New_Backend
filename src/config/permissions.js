@@ -27,6 +27,12 @@ const PERMISSIONS = {
   // Reader comments (moderation on the public site)
   COMMENT_MODERATE: "comment:moderate",
 
+  // Notices (reader-site ticker)
+  NOTICE_READ: "notice:read",
+  NOTICE_CREATE: "notice:create",
+  NOTICE_UPDATE: "notice:update",
+  NOTICE_DELETE: "notice:delete",
+
   // Media library (images & videos)
   MEDIA_READ: "media:read",
   MEDIA_CREATE: "media:create",
@@ -91,6 +97,16 @@ const PERMISSION_GROUPS = [
       PERMISSIONS.MEDIA_CREATE,
       PERMISSIONS.MEDIA_UPDATE,
       PERMISSIONS.MEDIA_DELETE,
+    ],
+  },
+  {
+    resource: "notice",
+    label: "Notices",
+    permissions: [
+      PERMISSIONS.NOTICE_READ,
+      PERMISSIONS.NOTICE_CREATE,
+      PERMISSIONS.NOTICE_UPDATE,
+      PERMISSIONS.NOTICE_DELETE,
     ],
   },
 ];
