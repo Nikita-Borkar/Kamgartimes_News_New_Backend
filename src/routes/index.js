@@ -18,6 +18,12 @@ const adCampaignRoutes = require("./v1/adCampaign.route");
 const adPlacementRoutes = require("./v1/adPlacement.route");
 const adStatsRoutes = require("./v1/adStats.route");
 const publicAdRoutes = require("./v1/publicAd.route");
+const siteSettingRoutes = require("./v1/siteSetting.route");
+const staticPageRoutes = require("./v1/staticPage.route");
+const questionOfTheDayRoutes = require("./v1/questionOfTheDay.route");
+const publicSiteSettingRoutes = require("./v1/publicSiteSetting.route");
+const publicStaticPageRoutes = require("./v1/publicStaticPage.route");
+const publicQuestionOfTheDayRoutes = require("./v1/publicQuestionOfTheDay.route");
 
 router.use("/auth", authRoutes);
 router.use("/health", healthRoutes);
@@ -36,5 +42,11 @@ router.use("/ad-campaigns", adCampaignRoutes);
 router.use("/ad-placements", adPlacementRoutes);
 router.use("/ad-stats", adStatsRoutes);
 router.use("/public/ads", publicAdRoutes);
+router.use("/site-setting", siteSettingRoutes);
+router.use("/static-pages", staticPageRoutes);
+router.use("/question-of-the-day", questionOfTheDayRoutes);
+router.use("/public/site-setting", publicSiteSettingRoutes);
+router.use("/public/static-pages", publicStaticPageRoutes);
+router.use("/public/question-of-the-day", publicQuestionOfTheDayRoutes);
 
 module.exports = router;

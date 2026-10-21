@@ -39,6 +39,22 @@ const PERMISSIONS = {
   AD_UPDATE: "ad:update",
   AD_DELETE: "ad:delete",
 
+  // Site settings (logo, tagline, social links)
+  SETTING_READ: "setting:read",
+  SETTING_UPDATE: "setting:update",
+
+  // Static pages (About Us, Contact Us, etc.)
+  STATIC_PAGE_READ: "staticPage:read",
+  STATIC_PAGE_CREATE: "staticPage:create",
+  STATIC_PAGE_UPDATE: "staticPage:update",
+  STATIC_PAGE_DELETE: "staticPage:delete",
+
+  // Question of the Day
+  QOTD_READ: "qotd:read",
+  QOTD_CREATE: "qotd:create",
+  QOTD_UPDATE: "qotd:update",
+  QOTD_DELETE: "qotd:delete",
+
   // Media library (images & videos)
   MEDIA_READ: "media:read",
   MEDIA_CREATE: "media:create",
@@ -123,6 +139,34 @@ const PERMISSION_GROUPS = [
       PERMISSIONS.AD_CREATE,
       PERMISSIONS.AD_UPDATE,
       PERMISSIONS.AD_DELETE,
+    ],
+  },
+  {
+    resource: "setting",
+    label: "Site Settings",
+    permissions: [
+      PERMISSIONS.SETTING_READ,
+      PERMISSIONS.SETTING_UPDATE,
+    ],
+  },
+  {
+    resource: "staticPage",
+    label: "Static Pages",
+    permissions: [
+      PERMISSIONS.STATIC_PAGE_READ,
+      PERMISSIONS.STATIC_PAGE_CREATE,
+      PERMISSIONS.STATIC_PAGE_UPDATE,
+      PERMISSIONS.STATIC_PAGE_DELETE,
+    ],
+  },
+  {
+    resource: "qotd",
+    label: "Question of the Day",
+    permissions: [
+      PERMISSIONS.QOTD_READ,
+      PERMISSIONS.QOTD_CREATE,
+      PERMISSIONS.QOTD_UPDATE,
+      PERMISSIONS.QOTD_DELETE,
     ],
   },
 ];
