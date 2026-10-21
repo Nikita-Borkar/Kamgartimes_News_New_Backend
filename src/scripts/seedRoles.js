@@ -28,6 +28,10 @@ const EDITOR_PERMISSIONS = [
   "notice:create",
   "notice:update",
   "notice:delete",
+  "ad:read",
+  "ad:create",
+  "ad:update",
+  "ad:delete",
 ];
 
 const USER_PERMISSIONS = ["article:read"];

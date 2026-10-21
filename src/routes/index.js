@@ -13,6 +13,11 @@ const videoMediaRoutes = require("./v1/videoMedia.route");
 const publicMediaRoutes = require("./v1/publicMedia.route");
 const noticeRoutes = require("./v1/notice.route");
 const publicNoticeRoutes = require("./v1/publicNotice.route");
+const adSlotRoutes = require("./v1/adSlot.route");
+const adCampaignRoutes = require("./v1/adCampaign.route");
+const adPlacementRoutes = require("./v1/adPlacement.route");
+const adStatsRoutes = require("./v1/adStats.route");
+const publicAdRoutes = require("./v1/publicAd.route");
 
 router.use("/auth", authRoutes);
 router.use("/health", healthRoutes);
@@ -26,5 +31,10 @@ router.use("/media/videos", videoMediaRoutes);
 router.use("/public/media", publicMediaRoutes);
 router.use("/notices", noticeRoutes);
 router.use("/public/notices", publicNoticeRoutes);
+router.use("/ad-slots", adSlotRoutes);
+router.use("/ad-campaigns", adCampaignRoutes);
+router.use("/ad-placements", adPlacementRoutes);
+router.use("/ad-stats", adStatsRoutes);
+router.use("/public/ads", publicAdRoutes);
 
 module.exports = router;

@@ -1040,6 +1040,76 @@
         }
       }
     },
+    "/public/ads": {
+      "get": {
+        "summary": "Active ads for a reader-site slot (public)",
+        "tags": [
+          "Public Ads"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "slot",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "example": "hero_leaderboard"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Slot metadata plus up to maxAds active ads"
+          },
+          "404": {
+            "description": "Slot not found or inactive"
+          }
+        }
+      }
+    },
+    "/public/ads/click": {
+      "post": {
+        "summary": "Record an ad click and get the destination URL (public)",
+        "tags": [
+          "Public Ads"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "adCampaignId",
+                  "adSlotId"
+                ],
+                "properties": {
+                  "adCampaignId": {
+                    "type": "string",
+                    "example": "64f8a1b2c3d4e5f6a7b8c9d1"
+                  },
+                  "adSlotId": {
+                    "type": "string",
+                    "example": "64f8a1b2c3d4e5f6a7b8c9d0"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Click recorded; returns clickUrl and target for the frontend redirect"
+          },
+          "404": {
+            "description": "Campaign or slot not found/inactive"
+          },
+          "429": {
+            "description": "Too many click requests"
+          }
+        }
+      }
+    },
     "/notices": {
       "get": {
         "summary": "List notices (admin)",
@@ -2235,6 +2305,675 @@
         "responses": {
           "200": {
             "description": "Article status updated"
+          }
+        }
+      }
+    },
+    "/ad-stats/clicks": {
+      "get": {
+        "summary": "Click report by campaign, slot and day",
+        "tags": [
+          "Ad Stats"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "campaign",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by campaign ID"
+          },
+          {
+            "in": "query",
+            "name": "slot",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter by slot ID"
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Click stats with totals, per-campaign, per-slot and daily breakdowns"
+          }
+        }
+      }
+    },
+    "/ad-slots": {
+      "get": {
+        "summary": "List ad slots (admin)",
+        "tags": [
+          "Ad Slots"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "section",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad slots list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an ad slot",
+        "tags": [
+          "Ad Slots"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "section",
+                  "size"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "Hero Leaderboard"
+                  },
+                  "key": {
+                    "type": "string",
+                    "example": "hero_leaderboard"
+                  },
+                  "section": {
+                    "type": "string",
+                    "example": "hero"
+                  },
+                  "size": {
+                    "type": "object",
+                    "properties": {
+                      "width": {
+                        "type": "number",
+                        "example": 970
+                      },
+                      "height": {
+                        "type": "number",
+                        "example": 250
+                      },
+                      "label": {
+                        "type": "string",
+                        "example": "970x250"
+                      }
+                    }
+                  },
+                  "position": {
+                    "type": "number",
+                    "example": 0
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "maxAds": {
+                    "type": "number",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ad slot created"
+          },
+          "400": {
+            "description": "Validation failed or duplicate key"
+          }
+        }
+      }
+    },
+    "/ad-slots/{id}": {
+      "get": {
+        "summary": "Get an ad slot by ID",
+        "tags": [
+          "Ad Slots"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad slot details"
+          },
+          "404": {
+            "description": "Ad slot not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an ad slot",
+        "tags": [
+          "Ad Slots"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ad slot updated"
+          },
+          "404": {
+            "description": "Ad slot not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deactivate an ad slot",
+        "tags": [
+          "Ad Slots"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad slot deactivated"
+          },
+          "404": {
+            "description": "Ad slot not found"
+          }
+        }
+      }
+    },
+    "/ad-placements": {
+      "get": {
+        "summary": "List ad placements (admin)",
+        "tags": [
+          "Ad Placements"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "adSlot",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "adCampaign",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad placements list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Assign a campaign to a slot",
+        "tags": [
+          "Ad Placements"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "adSlot",
+                  "adCampaign"
+                ],
+                "properties": {
+                  "adSlot": {
+                    "type": "string",
+                    "example": "64f8a1b2c3d4e5f6a7b8c9d0"
+                  },
+                  "adCampaign": {
+                    "type": "string",
+                    "example": "64f8a1b2c3d4e5f6a7b8c9d1"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "weight": {
+                    "type": "number",
+                    "example": 50
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ad placement created"
+          },
+          "400": {
+            "description": "Validation failed, bad slot/campaign, or invalid window"
+          }
+        }
+      }
+    },
+    "/ad-placements/{id}": {
+      "get": {
+        "summary": "Get an ad placement by ID",
+        "tags": [
+          "Ad Placements"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad placement details"
+          },
+          "404": {
+            "description": "Ad placement not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an ad placement",
+        "tags": [
+          "Ad Placements"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ad placement updated"
+          },
+          "404": {
+            "description": "Ad placement not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove an ad placement",
+        "tags": [
+          "Ad Placements"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad placement deleted"
+          },
+          "404": {
+            "description": "Ad placement not found"
+          }
+        }
+      }
+    },
+    "/ad-campaigns": {
+      "get": {
+        "summary": "List ad campaigns (admin)",
+        "tags": [
+          "Ad Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad campaigns list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an ad campaign (multipart/form-data, field name \"image\")",
+        "tags": [
+          "Ad Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "clickUrl",
+                  "image"
+                ],
+                "properties": {
+                  "image": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "title": {
+                    "type": "string",
+                    "example": "Diwali Offer"
+                  },
+                  "clickUrl": {
+                    "type": "string",
+                    "example": "/news/diwali-offer"
+                  },
+                  "imageAlt": {
+                    "type": "string"
+                  },
+                  "target": {
+                    "type": "string",
+                    "enum": [
+                      "_blank",
+                      "_self"
+                    ]
+                  },
+                  "priority": {
+                    "type": "string",
+                    "example": "10"
+                  },
+                  "isActive": {
+                    "type": "string",
+                    "example": "true"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "example": "2026-10-18"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "example": "2026-10-25"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Ad campaign created"
+          },
+          "400": {
+            "description": "Missing image, validation failed, or upload error"
+          }
+        }
+      }
+    },
+    "/ad-campaigns/{id}": {
+      "get": {
+        "summary": "Get an ad campaign by ID",
+        "tags": [
+          "Ad Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad campaign details"
+          },
+          "404": {
+            "description": "Ad campaign not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an ad campaign (optionally replace the image)",
+        "tags": [
+          "Ad Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Ad campaign updated"
+          },
+          "404": {
+            "description": "Ad campaign not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deactivate an ad campaign",
+        "tags": [
+          "Ad Campaigns"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ad campaign deactivated"
+          },
+          "404": {
+            "description": "Ad campaign not found"
           }
         }
       }

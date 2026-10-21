@@ -33,6 +33,12 @@ const PERMISSIONS = {
   NOTICE_UPDATE: "notice:update",
   NOTICE_DELETE: "notice:delete",
 
+  // Ads (slots, campaigns, placements, stats)
+  AD_READ: "ad:read",
+  AD_CREATE: "ad:create",
+  AD_UPDATE: "ad:update",
+  AD_DELETE: "ad:delete",
+
   // Media library (images & videos)
   MEDIA_READ: "media:read",
   MEDIA_CREATE: "media:create",
@@ -107,6 +113,16 @@ const PERMISSION_GROUPS = [
       PERMISSIONS.NOTICE_CREATE,
       PERMISSIONS.NOTICE_UPDATE,
       PERMISSIONS.NOTICE_DELETE,
+    ],
+  },
+  {
+    resource: "ad",
+    label: "Ads",
+    permissions: [
+      PERMISSIONS.AD_READ,
+      PERMISSIONS.AD_CREATE,
+      PERMISSIONS.AD_UPDATE,
+      PERMISSIONS.AD_DELETE,
     ],
   },
 ];
