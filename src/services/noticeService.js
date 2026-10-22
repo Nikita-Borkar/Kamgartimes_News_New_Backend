@@ -18,7 +18,10 @@ const assertValidWindow = (startsAt, endsAt) => {
 const listNotices = async ({ isActive, search, page = 1, limit = 20 } = {}) => {
   const filter = {};
   if (isActive !== undefined) filter.isActive = isActive === "true";
-  if (search) filter.title = { $regex: escapeRegex(search), $options: "i" };
+  if (search) {
+    const rx = { $regex: escapeRegex(search), $options: "i" };
+    filter.$or = [{ title: rx }, { message: rx }];
+  }
 
   const pageNum = Math.max(parseInt(page) || 1, 1);
   const limitNum = Math.min(Math.max(parseInt(limit) || 20, 1), 100);

@@ -3,6 +3,8 @@ const QuestionOfTheDay = require("../models/QuestionOfTheDay");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
 
+const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 const listQuestionOfTheDay = async ({
   isActive,
   category,
@@ -11,7 +13,7 @@ const listQuestionOfTheDay = async ({
 } = {}) => {
   const filter = {};
   if (isActive !== undefined) filter.isActive = isActive === "true";
-  if (category) filter.category = category;
+  if (category) filter.category = { $regex: escapeRegex(category), $options: "i" };
 
   const pageNum = Math.max(parseInt(page) || 1, 1);
   const limitNum = Math.min(Math.max(parseInt(limit) || 20, 1), 100);
@@ -90,7 +92,10 @@ const deleteQuestionOfTheDay = async (id) => {
   return { id, isActive: question.isActive };
 };
 
-// Public: get today's active question
+// Public: get today's active question.
+// The correct answer and its explanation are intentionally withheld so the
+// reader site cannot spoil the question — use checkTodayAnswer() to verify
+// what a reader picked.
 const getTodayQuestionOfTheDay = async ({ category } = {}) => {
   const now = new Date();
 
@@ -106,10 +111,40 @@ const getTodayQuestionOfTheDay = async ({ category } = {}) => {
 
   const question = await QuestionOfTheDay.findOne(filter)
     .sort({ createdAt: -1 })
+    .select("-correctAnswer -explanation")
     .lean();
 
   if (!question) throw new NotFoundError("No active question of the day found");
   return question;
+};
+
+// Public: verify the answer a reader selected for today's question.
+const checkTodayAnswer = async ({ answer, category } = {}) => {
+  const now = new Date();
+
+  const filter = {
+    isActive: true,
+    $and: [
+      { $or: [{ startDate: null }, { startDate: { $lte: now } }] },
+      { $or: [{ endDate: null }, { endDate: { $gte: now } }] },
+    ],
+  };
+
+  if (category) filter.category = category;
+
+  const question = await QuestionOfTheDay.findOne(filter).sort({ createdAt: -1 }).lean();
+  if (!question) throw new NotFoundError("No active question of the day found");
+
+  const isCorrect =
+    typeof answer === "string" &&
+    answer.trim().toLowerCase() === String(question.correctAnswer || "").trim().toLowerCase();
+
+  return {
+    id: question._id,
+    isCorrect,
+    correctAnswer: question.correctAnswer,
+    explanation: question.explanation || "",
+  };
 };
 
 module.exports = {
@@ -119,4 +154,5 @@ module.exports = {
   updateQuestionOfTheDay,
   deleteQuestionOfTheDay,
   getTodayQuestionOfTheDay,
+  checkTodayAnswer,
 };

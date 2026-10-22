@@ -55,6 +55,7 @@ const updateVideoSchema = z.object({
 
 const mediaQuerySchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
+  videoType: z.enum(["SHORT", "VIDEO"]).optional(),
   category: objectIdString.optional(),
   search: z.string().optional(),
   page: z.string().optional(),

@@ -5,6 +5,7 @@ const {
   updateQuestionOfTheDay,
   deleteQuestionOfTheDay,
   getTodayQuestionOfTheDay,
+  checkTodayAnswer,
 } = require("../services/questionOfTheDayService");
 const successResponse = require("../errors/responses/successResponse");
 
@@ -94,6 +95,17 @@ const today = async (req, res, next) => {
   }
 };
 
+const checkAnswer = async (req, res, next) => {
+  try {
+    const result = await checkTodayAnswer(req.validatedBody || req.body || {});
+    return res
+      .status(200)
+      .json(new successResponse(200, "Answer checked successfully", result));
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   list,
   getById,
@@ -101,4 +113,5 @@ module.exports = {
   update,
   remove,
   today,
+  checkAnswer,
 };

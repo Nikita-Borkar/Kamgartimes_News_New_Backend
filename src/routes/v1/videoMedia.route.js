@@ -111,7 +111,7 @@ router.get(
   authenticate,
   loadPermissions,
   requirePermission("media:read"),
-  validate(mediaQuerySchema),
+  validate(mediaQuerySchema, "query"),
   list
 );
 router.get(

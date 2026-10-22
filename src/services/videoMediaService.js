@@ -33,9 +33,13 @@ const buildEmbedAndThumb = (videoId) => ({
   thumbnailUrl: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
 });
 
-const listVideos = async ({ status, category, search, page = 1, limit = 20 }) => {
+const listVideos = async ({ status, videoType, category, search, page = 1, limit = 20 }) => {
   const filter = {};
   if (status) filter.status = status;
+  if (videoType) {
+    if (videoType !== "SHORT" && videoType !== "VIDEO") throw new BadRequestError("Invalid video type");
+    filter.videoType = videoType;
+  }
   if (category) {
     if (!mongoose.isValidObjectId(category)) throw new BadRequestError("Invalid category ID");
     filter.category = category;

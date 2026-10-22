@@ -9,7 +9,7 @@ const successResponse = require("../errors/responses/successResponse");
 
 const list = async (req, res, next) => {
   try {
-    const result = await listImages(req.query);
+    const result = await listImages(req.validatedQuery || req.query);
     return res
       .status(200)
       .json(new successResponse(200, "Images fetched successfully", result));
