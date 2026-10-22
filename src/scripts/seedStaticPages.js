@@ -100,13 +100,17 @@ const seed = async () => {
     await mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost:27017/kamgartimes");
     console.log("Connected to MongoDB");
 
+    // Attribute seeded pages to the admin account when it exists
+    const User = require("../models/User");
+    const admin = await User.findOne({ role: "admin" });
+
     for (const pageData of pages) {
       const existing = await StaticPage.findOne({ slug: pageData.slug });
       if (existing) {
         console.log(`⏭️  Skipped: ${pageData.slug} (already exists)`);
         continue;
       }
-      await StaticPage.create({ ...pageData, createdBy: null, updatedBy: null });
+      await StaticPage.create({ ...pageData, createdBy: admin?._id || null, updatedBy: admin?._id || null });
       console.log(`✅ Created: ${pageData.slug}`);
     }
 

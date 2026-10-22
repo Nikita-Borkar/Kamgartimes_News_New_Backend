@@ -23,7 +23,8 @@ const staticPageSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      // nullable: seed scripts and system-created pages have no acting user
+      default: null,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,

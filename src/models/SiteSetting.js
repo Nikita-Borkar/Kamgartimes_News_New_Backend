@@ -42,7 +42,9 @@ const siteSettingSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      // nullable: the settings doc is auto-created by GET /site-setting before
+      // any user action, so there is no userId to attribute at that point
+      default: null,
     },
     updatedBy: {
       type: mongoose.Schema.Types.ObjectId,

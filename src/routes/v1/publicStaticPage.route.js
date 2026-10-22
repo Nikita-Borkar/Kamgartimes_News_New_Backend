@@ -25,7 +25,7 @@ const { publicStaticPageParamSchema } = require("../../dtos/publicStaticPageDto"
 
 router.get(
   "/:slug",
-  validate(publicStaticPageParamSchema),
+  validate(publicStaticPageParamSchema, "params"),
   getPublicBySlug,
 );
 
