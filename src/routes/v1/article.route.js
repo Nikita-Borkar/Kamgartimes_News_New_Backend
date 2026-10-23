@@ -6,6 +6,7 @@ const {
   getById,
   create,
   update,
+  updateFlags,
   updateStatus,
   remove,
   moderateCommentStatus,
@@ -18,6 +19,7 @@ const {
   createArticleSchema,
   updateArticleSchema,
   articleStatusSchema,
+  articleFlagsSchema,
   commentStatusSchema,
   articleQuerySchema,
 } = require("../../dtos/articleDto");
@@ -187,6 +189,35 @@ const {
  *         description: Article status updated
  */
 
+/**
+ * @swagger
+ * /articles/{id}/flags:
+ *   patch:
+ *     summary: Toggle editorial flags on an article (homepage curation)
+ *     tags: [Articles]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               isLead: { type: boolean }
+ *               isFeatured: { type: boolean }
+ *               isTrending: { type: boolean }
+ *               isEditorsPick: { type: boolean }
+ *               isBreaking: { type: boolean }
+ *     responses:
+ *       200:
+ *         description: Flags updated
+ */
+
 // Comment moderation is registered before /:id routes to avoid any
 // ambiguity with parametric segments.
 router.patch(
@@ -210,7 +241,7 @@ router.get(
   authenticate,
   loadPermissions,
   requirePermission("article:read"),
-  validate(articleQuerySchema),
+  validate(articleQuerySchema, "query"),
   list
 );
 router.get(
@@ -235,6 +266,14 @@ router.put(
   requirePermission("article:update"),
   validate(updateArticleSchema),
   update
+);
+router.patch(
+  "/:id/flags",
+  authenticate,
+  loadPermissions,
+  requirePermission("article:update"),
+  validate(articleFlagsSchema),
+  updateFlags
 );
 router.patch(
   "/:id/status",

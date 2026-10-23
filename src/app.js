@@ -8,36 +8,63 @@ const { swaggerUi, swaggerSpec } = require("./docs/swagger");
 
 const app = express();
 
+// Behind a proxy (Vercel, Render, nginx) the client IP comes from
+// X-Forwarded-For; without this the rate limiters see the proxy address.
+app.set("trust proxy", 1);
+
 // Mount Swagger UI
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Body parsers (must come before routes so req.body is populated)
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true, limit: "2mb" }));
 
 app.use(helmet());
+
+// Comma-separated CORS_ORIGINS in .env for deployed frontends; local dev
+// origins stay allowed so the website (3000) and admin panel (3001) work
+// without extra configuration.
+const defaultOrigins = [
+  "http://localhost:3001",
+  "http://localhost:3000",
+  "http://127.0.0.1:3001",
+  "http://127.0.0.1:3000",
+];
+const allowedOrigins = (process.env.CORS_ORIGINS || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const corsOrigins = allowedOrigins.length
+  ? [...new Set([...defaultOrigins, ...allowedOrigins])]
+  : defaultOrigins;
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3001",
-      "http://localhost:3000",
-      "http://127.0.0.1:3001",
-      "http://127.0.0.1:3000",
-    ],
+    origin: (origin, callback) => {
+      // Same-origin, curl and native apps send no Origin header.
+      if (!origin || corsOrigins.includes(origin)) return callback(null, true);
+      return callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
+    credentials: true,
   }),
 );
+
+// Rate limiting must be registered before the routes it protects.
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, statusCode: 429, message: "Too many requests" },
+});
+app.use("/api/v1", limiter);
 
 // Routes
 const apiRoutes = require("./routes/index");
 app.use("/api/v1", apiRoutes);
 
-app.all("all", notFound);
+// Catch-all as middleware: Express 5 no longer accepts a bare "*" path.
+app.use(notFound);
 app.use(globalErrorHandler);
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-});
-app.use(limiter);
 
 module.exports = app;

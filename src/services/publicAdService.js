@@ -3,6 +3,7 @@ const AdSlot = require("../models/AdSlot");
 const AdCampaign = require("../models/AdCampaign");
 const AdPlacement = require("../models/AdPlacement");
 const AdClick = require("../models/AdClick");
+const AdImpression = require("../models/AdImpression");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
 
@@ -125,4 +126,30 @@ const recordClick = async ({ adCampaignId, adSlotId, ipAddress, userAgent }) => 
   return { clickUrl: campaign.clickUrl, target: campaign.target };
 };
 
-module.exports = { getAdsForSlot, recordClick };
+// Impressions are written per render, so the counter on the campaign can be
+// read without aggregating the impression collection.
+const recordImpression = async ({ adCampaignId, adSlotId, ipAddress, userAgent }) => {
+  assertValidId(adCampaignId, "ad campaign");
+  assertValidId(adSlotId, "ad slot");
+
+  const [campaign, slot] = await Promise.all([
+    AdCampaign.findById(adCampaignId),
+    AdSlot.findById(adSlotId),
+  ]);
+  if (!campaign || !campaign.isActive) throw new NotFoundError("Ad campaign not found");
+  if (!slot || !slot.isActive) throw new NotFoundError("Ad slot not found");
+
+  await Promise.all([
+    AdImpression.create({
+      adCampaign: campaign._id,
+      adSlot: slot._id,
+      ipAddress: ipAddress || "",
+      userAgent: userAgent || "",
+    }),
+    AdCampaign.updateOne({ _id: campaign._id }, { $inc: { impressions: 1 } }),
+  ]);
+
+  return { recorded: true };
+};
+
+module.exports = { getAdsForSlot, recordClick, recordImpression };

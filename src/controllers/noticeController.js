@@ -65,7 +65,7 @@ const remove = async (req, res, next) => {
 
 const ticker = async (req, res, next) => {
   try {
-    const notices = await listActiveNotices();
+    const notices = await listActiveNotices(req.validatedQuery || {});
     return res
       .status(200)
       .json(new successResponse(200, "Notice ticker fetched successfully", notices));

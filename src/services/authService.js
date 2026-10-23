@@ -55,6 +55,23 @@ const loginUserService = async ({ email, password }) => {
   };
 };
 
+const getUserProfile = async (userId) => {
+  const user = await User.findById(userId).select("name email role isActive createdAt");
+  if (!user || !user.isActive) throw new UnauthorizedError("User not found or inactive");
+
+  const role = await Role.findOne({ name: user.role });
+  const permissions = role && role.isActive ? role.permissions : [];
+
+  return {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    permissions,
+    createdAt: user.createdAt,
+  };
+};
+
 const refreshAccessToken = async ({ refreshToken }) => {
   refreshTokenDto.parse({ refreshToken }); // Zod validation
 
@@ -93,5 +110,6 @@ const refreshAccessToken = async ({ refreshToken }) => {
 module.exports = {
   registerUser: registerUserService,
   loginUser: loginUserService,
+  getUserProfile,
   refreshAccessToken,
 };

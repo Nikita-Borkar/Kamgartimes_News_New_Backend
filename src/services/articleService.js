@@ -3,6 +3,7 @@ const Article = require("../models/Article");
 const ArticleReaction = require("../models/ArticleReaction");
 const Comment = require("../models/Comment");
 const Category = require("../models/Category");
+const City = require("../models/City");
 const User = require("../models/User");
 const slugify = require("../utils/slugify");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
@@ -19,14 +20,65 @@ const assertCategoryExists = async (categoryId) => {
   if (!category) throw new BadRequestError("Category not found");
 };
 
-const listArticles = async ({ status, category, search, page = 1, limit = 20 }) => {
+const assertCityExists = async (cityId) => {
+  if (!cityId) return;
+  const city = await City.findById(cityId);
+  if (!city) throw new BadRequestError("City not found");
+};
+
+// Trim, drop blanks and de-duplicate reader-facing string arrays.
+const cleanStringArray = (values) => {
+  if (!Array.isArray(values)) return [];
+  return [...new Set(values.map((value) => String(value).trim()).filter(Boolean))];
+};
+
+const estimateReadTime = (content) => {
+  const text =
+    typeof content === "string" ? content.replace(/<[^>]*>/g, " ") : JSON.stringify(content || "");
+  const words = text.split(/\s+/).filter(Boolean).length;
+  if (!words) return "";
+  return `${Math.max(1, Math.ceil(words / 200))} min read`;
+};
+
+const listArticles = async ({
+  status,
+  category,
+  city,
+  search,
+  tag,
+  isLead,
+  isFeatured,
+  isTrending,
+  isEditorsPick,
+  isBreaking,
+  page = 1,
+  limit = 20,
+}) => {
   const filter = {};
   if (status) filter.status = status;
   if (category) {
     assertValidId(category, "category");
     filter.category = category;
   }
-  if (search) filter.title = { $regex: escapeRegex(search), $options: "i" };
+  if (city) {
+    assertValidId(city, "city");
+    filter.city = city;
+  }
+  if (tag) filter.tags = tag;
+  if (search) {
+    const rx = { $regex: escapeRegex(search), $options: "i" };
+    filter.$or = [{ title: rx }, { summary: rx }, { tags: rx }];
+  }
+
+  for (const [field, value] of Object.entries({
+    isLead,
+    isFeatured,
+    isTrending,
+    isEditorsPick,
+    isBreaking,
+  })) {
+    if (value !== undefined) filter[field] = value === "true" || value === true;
+  }
 
   const pageNum = Math.max(parseInt(page) || 1, 1);
   const limitNum = Math.min(Math.max(parseInt(limit) || 20, 1), 100);
@@ -38,6 +90,7 @@ const listArticles = async ({ status, category, search, page = 1, limit = 20 }) 
       .skip(skip)
       .limit(limitNum)
       .populate("category", "name slug")
+      .populate("city", "name slug")
       .populate("author", "name")
       .populate("createdBy", "name")
       .populate("updatedBy", "name"),
@@ -51,6 +104,7 @@ const getArticleById = async (id) => {
   assertValidId(id, "article");
   const article = await Article.findById(id)
     .populate("category", "name slug")
+    .populate("city", "name slug")
     .populate("author", "name")
     .populate("createdBy", "name")
     .populate("updatedBy", "name");
@@ -59,9 +113,28 @@ const getArticleById = async (id) => {
 };
 
 const createArticle = async (body, userId) => {
-  const { title, slug, summary, content, category, author, featuredImage, seo } = body;
+  const {
+    title,
+    slug,
+    summary,
+    content,
+    category,
+    author,
+    city,
+    featuredImage,
+    keyPoints,
+    tags,
+    readTime,
+    isLead,
+    isFeatured,
+    isTrending,
+    isEditorsPick,
+    isBreaking,
+    seo,
+  } = body;
 
   await assertCategoryExists(category);
+  await assertCityExists(city);
 
   if (author) {
     const authorUser = await User.findById(author);
@@ -84,6 +157,15 @@ const createArticle = async (body, userId) => {
     featuredImage: featuredImage || "",
     category,
     author: author || userId,
+    city: city || null,
+    keyPoints: cleanStringArray(keyPoints),
+    tags: cleanStringArray(tags),
+    readTime: readTime || estimateReadTime(content),
+    isLead: isLead === true,
+    isFeatured: isFeatured === true,
+    isTrending: isTrending === true,
+    isEditorsPick: isEditorsPick === true,
+    isBreaking: isBreaking === true,
     status: "DRAFT",
     publishedAt: null,
     seo: {
@@ -103,11 +185,34 @@ const updateArticle = async (id, body, userId) => {
   const article = await Article.findById(id);
   if (!article) throw new NotFoundError("Article not found");
 
-  const { title, slug, summary, content, category, author, featuredImage, seo } = body;
+  const {
+    title,
+    slug,
+    summary,
+    content,
+    category,
+    author,
+    city,
+    featuredImage,
+    keyPoints,
+    tags,
+    readTime,
+    isLead,
+    isFeatured,
+    isTrending,
+    isEditorsPick,
+    isBreaking,
+    seo,
+  } = body;
 
   if (category !== undefined) {
     await assertCategoryExists(category);
     article.category = category;
+  }
+
+  if (city !== undefined) {
+    await assertCityExists(city);
+    article.city = city || null;
   }
 
   if (author !== undefined) {
@@ -120,6 +225,22 @@ const updateArticle = async (id, body, userId) => {
   if (summary !== undefined) article.summary = summary;
   if (content !== undefined) article.content = content;
   if (featuredImage !== undefined) article.featuredImage = featuredImage;
+  if (keyPoints !== undefined) article.keyPoints = cleanStringArray(keyPoints);
+  if (tags !== undefined) article.tags = cleanStringArray(tags);
+  if (readTime !== undefined) article.readTime = readTime;
+  else if (content !== undefined && !article.readTime) {
+    article.readTime = estimateReadTime(content);
+  }
+
+  for (const [field, value] of Object.entries({
+    isLead,
+    isFeatured,
+    isTrending,
+    isEditorsPick,
+    isBreaking,
+  })) {
+    if (value !== undefined) article[field] = value === true;
+  }
 
   // The slug is the public URL — only change it when explicitly provided so
   // existing article links never break on a title edit.
@@ -142,6 +263,28 @@ const updateArticle = async (id, body, userId) => {
   article.updatedBy = userId;
   await article.save();
   return article;
+};
+
+const updateArticleFlags = async (id, flags, userId) => {
+  assertValidId(id, "article");
+  const article = await Article.findById(id);
+  if (!article) throw new NotFoundError("Article not found");
+
+  for (const [field, value] of Object.entries(flags)) {
+    if (value !== undefined) article[field] = value === true;
+  }
+
+  article.updatedBy = userId;
+  await article.save();
+
+  return {
+    id: article._id,
+    isLead: article.isLead,
+    isFeatured: article.isFeatured,
+    isTrending: article.isTrending,
+    isEditorsPick: article.isEditorsPick,
+    isBreaking: article.isBreaking,
+  };
 };
 
 const updateArticleStatus = async (id, status) => {
@@ -220,6 +363,7 @@ module.exports = {
   getArticleById,
   createArticle,
   updateArticle,
+  updateArticleFlags,
   updateArticleStatus,
   deleteArticle,
   moderateComment,

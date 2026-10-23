@@ -24,6 +24,17 @@ const questionOfTheDayRoutes = require("./v1/questionOfTheDay.route");
 const publicSiteSettingRoutes = require("./v1/publicSiteSetting.route");
 const publicStaticPageRoutes = require("./v1/publicStaticPage.route");
 const publicQuestionOfTheDayRoutes = require("./v1/publicQuestionOfTheDay.route");
+const publicHomeRoutes = require("./v1/publicHome.route");
+const publicCategoryRoutes = require("./v1/publicCategory.route");
+const cityRoutes = require("./v1/city.route");
+const publicCityRoutes = require("./v1/publicCity.route");
+const galleryRoutes = require("./v1/gallery.route");
+const publicGalleryRoutes = require("./v1/publicGallery.route");
+const epaperRoutes = require("./v1/epaper.route");
+const publicEpaperRoutes = require("./v1/publicEpaper.route");
+const pollRoutes = require("./v1/poll.route");
+const publicPollRoutes = require("./v1/publicPoll.route");
+const submissionRoutes = require("./v1/submission.route");
 
 router.use("/auth", authRoutes);
 router.use("/health", healthRoutes);
@@ -48,5 +59,29 @@ router.use("/question-of-the-day", questionOfTheDayRoutes);
 router.use("/public/site-setting", publicSiteSettingRoutes);
 router.use("/public/static-pages", publicStaticPageRoutes);
 router.use("/public/question-of-the-day", publicQuestionOfTheDayRoutes);
+router.use("/public/home", publicHomeRoutes);
+router.use("/public/categories", publicCategoryRoutes);
+router.use("/public/cities", publicCityRoutes);
+router.use("/public/galleries", publicGalleryRoutes);
+router.use("/public/epaper", publicEpaperRoutes);
+router.use("/public/polls", publicPollRoutes);
+router.use("/cities", cityRoutes);
+router.use("/galleries", galleryRoutes);
+router.use("/epaper", epaperRoutes);
+router.use("/polls", pollRoutes);
+router.use("/public/submissions/news-tips", submissionRoutes.newsTips.publicRouter);
+router.use(
+  "/public/submissions/reporter-applications",
+  submissionRoutes.reporterApplications.publicRouter,
+);
+router.use("/public/submissions/ad-inquiries", submissionRoutes.adInquiries.publicRouter);
+router.use(
+  "/public/submissions/contact-messages",
+  submissionRoutes.contactMessages.publicRouter,
+);
+router.use("/news-tips", submissionRoutes.newsTips.adminRouter);
+router.use("/reporter-applications", submissionRoutes.reporterApplications.adminRouter);
+router.use("/ad-inquiries", submissionRoutes.adInquiries.adminRouter);
+router.use("/contact-messages", submissionRoutes.contactMessages.adminRouter);
 
 module.exports = router;

@@ -72,6 +72,12 @@ const adCampaignSchema = new mongoose.Schema(
       default: null,
     },
 
+    // Denormalized impression count (incremented by /public/ads/impression)
+    impressions: {
+      type: Number,
+      default: 0,
+    },
+
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

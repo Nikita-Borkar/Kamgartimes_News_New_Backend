@@ -1,6 +1,7 @@
 const {
   registerUser,
   loginUser,
+  getUserProfile,
   refreshAccessToken,
 } = require("../services/authService");
 const successResponse = require("../errors/responses/successResponse");
@@ -41,10 +42,10 @@ const refresh = async (req, res, next) => {
 
 const me = async (req, res, next) => {
   try {
-    // req.user is set by authMiddleware (contains decoded JWT payload)
+    const profile = await getUserProfile(req.user.userId);
     return res
       .status(200)
-      .json(new successResponse(200, "User profile", req.user));
+      .json(new successResponse(200, "User profile", profile));
   } catch (err) {
     next(err);
   }

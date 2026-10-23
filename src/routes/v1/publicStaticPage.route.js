@@ -1,9 +1,30 @@
 const express = require("express");
 const router = express.Router();
 
-const { getPublicBySlug } = require("../../controllers/staticPageController");
+const { publicList, getPublicBySlug } = require("../../controllers/staticPageController");
 const validate = require("../../middlewares/validate");
-const { publicStaticPageParamSchema } = require("../../dtos/publicStaticPageDto");
+const {
+  publicStaticPageParamSchema,
+  publicStaticPageQuerySchema,
+} = require("../../dtos/publicStaticPageDto");
+
+/**
+ * @swagger
+ * /public/static-pages:
+ *   get:
+ *     summary: List active static pages for header/footer menus (public)
+ *     tags: [Public Static Pages]
+ *     parameters:
+ *       - in: query
+ *         name: showInHeader
+ *         schema: { type: string }
+ *       - in: query
+ *         name: showInFooter
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Active static pages ordered for display
+ */
 
 /**
  * @swagger
@@ -23,6 +44,11 @@ const { publicStaticPageParamSchema } = require("../../dtos/publicStaticPageDto"
  *         description: Static page not found
  */
 
+router.get(
+  "/",
+  validate(publicStaticPageQuerySchema, "query"),
+  publicList,
+);
 router.get(
   "/:slug",
   validate(publicStaticPageParamSchema, "params"),

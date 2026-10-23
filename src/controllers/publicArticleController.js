@@ -3,7 +3,7 @@ const successResponse = require("../errors/responses/successResponse");
 
 const list = async (req, res, next) => {
   try {
-    const result = await publicArticleService.listPublishedArticles(req.query);
+    const result = await publicArticleService.listPublishedArticles(req.validatedQuery);
     return res
       .status(200)
       .json(new successResponse(200, "Articles fetched successfully", result));
@@ -29,6 +29,20 @@ const getById = async (req, res, next) => {
     return res
       .status(200)
       .json(new successResponse(200, "Article fetched successfully", article));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const related = async (req, res, next) => {
+  try {
+    const articles = await publicArticleService.getRelatedArticles(
+      req.params.id,
+      req.validatedQuery,
+    );
+    return res
+      .status(200)
+      .json(new successResponse(200, "Related articles fetched successfully", { articles }));
   } catch (err) {
     next(err);
   }
@@ -122,6 +136,7 @@ module.exports = {
   list,
   getBySlug,
   getById,
+  related,
   view,
   share,
   click,

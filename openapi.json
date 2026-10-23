@@ -487,6 +487,907 @@
         }
       }
     },
+    "/public/submissions/news-tips": {
+      "post": {
+        "summary": "Submit a news tip (public)",
+        "tags": [
+          "Public Submissions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "description"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "location": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "attachments": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Tip received"
+          },
+          "429": {
+            "description": "Too many submissions"
+          }
+        }
+      }
+    },
+    "/public/submissions/reporter-applications": {
+      "post": {
+        "summary": "Apply to become a reporter (public)",
+        "tags": [
+          "Public Submissions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "fullName",
+                  "email",
+                  "phone"
+                ],
+                "properties": {
+                  "fullName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "experience": {
+                    "type": "string"
+                  },
+                  "portfolioUrl": {
+                    "type": "string"
+                  },
+                  "coverLetter": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Application received"
+          },
+          "429": {
+            "description": "Too many submissions"
+          }
+        }
+      }
+    },
+    "/public/submissions/ad-inquiries": {
+      "post": {
+        "summary": "Ask about advertising (public)",
+        "tags": [
+          "Public Submissions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "company": {
+                    "type": "string"
+                  },
+                  "adType": {
+                    "type": "string"
+                  },
+                  "budget": {
+                    "type": "string"
+                  },
+                  "preferredSlot": {
+                    "type": "string"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Inquiry received"
+          },
+          "429": {
+            "description": "Too many submissions"
+          }
+        }
+      }
+    },
+    "/public/submissions/contact-messages": {
+      "post": {
+        "summary": "Send a contact message (public)",
+        "tags": [
+          "Public Submissions"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name",
+                  "email",
+                  "message"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "phone": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "message": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Message received"
+          },
+          "429": {
+            "description": "Too many submissions"
+          }
+        }
+      }
+    },
+    "/news-tips": {
+      "get": {
+        "summary": "List news tips (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "News tips"
+          }
+        }
+      }
+    },
+    "/news-tips/{id}": {
+      "get": {
+        "summary": "Get a news tip (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "News tip"
+          }
+        }
+      }
+    },
+    "/news-tips/{id}/status": {
+      "patch": {
+        "summary": "Update a news tip's status (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "NEW",
+                      "IN_REVIEW",
+                      "ACCEPTED",
+                      "REJECTED",
+                      "SPAM"
+                    ]
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          }
+        }
+      }
+    },
+    "/reporter-applications": {
+      "get": {
+        "summary": "List reporter applications (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Applications"
+          }
+        }
+      }
+    },
+    "/reporter-applications/{id}": {
+      "get": {
+        "summary": "Get a reporter application (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Application"
+          }
+        }
+      }
+    },
+    "/reporter-applications/{id}/status": {
+      "patch": {
+        "summary": "Update a reporter application's status (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "NEW",
+                      "IN_REVIEW",
+                      "SHORTLISTED",
+                      "HIRED",
+                      "REJECTED",
+                      "SPAM"
+                    ]
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          }
+        }
+      }
+    },
+    "/ad-inquiries": {
+      "get": {
+        "summary": "List ad inquiries (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inquiries"
+          }
+        }
+      }
+    },
+    "/ad-inquiries/{id}": {
+      "get": {
+        "summary": "Get an ad inquiry (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Inquiry"
+          }
+        }
+      }
+    },
+    "/ad-inquiries/{id}/status": {
+      "patch": {
+        "summary": "Update an ad inquiry's status (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "NEW",
+                      "IN_REVIEW",
+                      "QUOTED",
+                      "CLOSED",
+                      "SPAM"
+                    ]
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          }
+        }
+      }
+    },
+    "/contact-messages": {
+      "get": {
+        "summary": "List contact messages (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Messages"
+          }
+        }
+      }
+    },
+    "/contact-messages/{id}": {
+      "get": {
+        "summary": "Get a contact message (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message"
+          }
+        }
+      }
+    },
+    "/contact-messages/{id}/status": {
+      "patch": {
+        "summary": "Update a contact message's status (admin)",
+        "tags": [
+          "Submissions"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "NEW",
+                      "IN_REVIEW",
+                      "REPLIED",
+                      "CLOSED",
+                      "SPAM"
+                    ]
+                  },
+                  "notes": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Status updated"
+          }
+        }
+      }
+    },
+    "/static-pages": {
+      "get": {
+        "summary": "List static pages (admin)",
+        "tags": [
+          "Static Pages"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "showInFooter",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "showInHeader",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Static pages list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a static page",
+        "tags": [
+          "Static Pages"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "content"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "content": {
+                    "type": "object"
+                  },
+                  "excerpt": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "showInFooter": {
+                    "type": "boolean"
+                  },
+                  "showInHeader": {
+                    "type": "boolean"
+                  },
+                  "sortOrder": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Static page created"
+          }
+        }
+      }
+    },
+    "/static-pages/{id}": {
+      "get": {
+        "summary": "Get a static page by ID (admin)",
+        "tags": [
+          "Static Pages"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Static page details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a static page",
+        "tags": [
+          "Static Pages"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Static page updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deactivate a static page (soft delete)",
+        "tags": [
+          "Static Pages"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Static page deactivated"
+          }
+        }
+      }
+    },
+    "/site-setting": {
+      "get": {
+        "summary": "Get site configuration (logo, tagline, social links)",
+        "tags": [
+          "Site Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Site setting object"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update site configuration (logo upload optional)",
+        "tags": [
+          "Site Settings"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "siteName": {
+                    "type": "string"
+                  },
+                  "tagline": {
+                    "type": "string"
+                  },
+                  "contactEmail": {
+                    "type": "string"
+                  },
+                  "contactPhone": {
+                    "type": "string"
+                  },
+                  "address": {
+                    "type": "string"
+                  },
+                  "isMaintenanceMode": {
+                    "type": "boolean"
+                  },
+                  "socialLinks": {
+                    "type": "string",
+                    "description": "JSON string of social links array"
+                  },
+                  "image": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Logo image file"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Site setting updated"
+          },
+          "400": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
     "/roles": {
       "get": {
         "summary": "List all roles",
@@ -650,11 +1551,397 @@
         }
       }
     },
+    "/question-of-the-day": {
+      "get": {
+        "summary": "List questions of the day (admin)",
+        "tags": [
+          "Question of the Day"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Questions list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a question of the day",
+        "tags": [
+          "Question of the Day"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question"
+                ],
+                "properties": {
+                  "question": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "correctAnswer": {
+                    "type": "string"
+                  },
+                  "explanation": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "category": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Question created"
+          }
+        }
+      }
+    },
+    "/question-of-the-day/{id}": {
+      "get": {
+        "summary": "Get a question of the day by ID (admin)",
+        "tags": [
+          "Question of the Day"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a question of the day",
+        "tags": [
+          "Question of the Day"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deactivate a question of the day (soft delete)",
+        "tags": [
+          "Question of the Day"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Question deactivated"
+          }
+        }
+      }
+    },
+    "/public/static-pages": {
+      "get": {
+        "summary": "List active static pages for header/footer menus (public)",
+        "tags": [
+          "Public Static Pages"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "showInHeader",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "showInFooter",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active static pages ordered for display"
+          }
+        }
+      }
+    },
+    "/public/static-pages/{slug}": {
+      "get": {
+        "summary": "Get a published static page by slug (public)",
+        "tags": [
+          "Public Static Pages"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Static page content"
+          },
+          "404": {
+            "description": "Static page not found"
+          }
+        }
+      }
+    },
+    "/public/site-setting": {
+      "get": {
+        "summary": "Public site configuration for reader website (logo, tagline, social links)",
+        "tags": [
+          "Public Site Settings"
+        ],
+        "responses": {
+          "200": {
+            "description": "Public site setting object"
+          }
+        }
+      }
+    },
+    "/public/question-of-the-day": {
+      "get": {
+        "summary": "Get today's active question of the day (public)",
+        "tags": [
+          "Public Question of the Day"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Today's active question"
+          },
+          "404": {
+            "description": "No active question found"
+          }
+        }
+      }
+    },
+    "/public/question-of-the-day/check": {
+      "post": {
+        "summary": "Check a reader's answer against today's question (public)",
+        "tags": [
+          "Public Question of the Day"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "answer"
+                ],
+                "properties": {
+                  "answer": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Result of the answer check"
+          },
+          "404": {
+            "description": "No active question found"
+          }
+        }
+      }
+    },
+    "/public/polls/active": {
+      "get": {
+        "summary": "Get the currently running poll (public)",
+        "tags": [
+          "Public Polls"
+        ],
+        "responses": {
+          "200": {
+            "description": "Active poll with options and percentages, or null"
+          }
+        }
+      }
+    },
+    "/public/polls/{id}/vote": {
+      "post": {
+        "summary": "Vote in the active poll (public; one vote per reader)",
+        "tags": [
+          "Public Polls"
+        ],
+        "description": "Guests are deduplicated by IP + user agent, signed-in readers by account. Optional bearer token lets the server prefer the account.\n",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "optionId"
+                ],
+                "properties": {
+                  "optionId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Vote recorded; returns updated results"
+          },
+          "400": {
+            "description": "Invalid option or reader already voted"
+          }
+        }
+      }
+    },
     "/public/notices/ticker": {
       "get": {
         "summary": "Active notice ticker feed for the reader site (public)",
         "tags": [
           "Public Notices"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "NOTICE",
+                "BREAKING"
+              ]
+            },
+            "description": "Filter the ticker to plain notices or breaking items"
+          }
         ],
         "responses": {
           "200": {
@@ -742,6 +2029,274 @@
         }
       }
     },
+    "/public/media/images/{id}": {
+      "get": {
+        "summary": "Get a published image by ID (public)",
+        "tags": [
+          "Public Media"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Image details"
+          },
+          "404": {
+            "description": "Image not found or not published"
+          }
+        }
+      }
+    },
+    "/public/media/videos/{id}": {
+      "get": {
+        "summary": "Get a published video by ID (public)",
+        "tags": [
+          "Public Media"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Video details"
+          },
+          "404": {
+            "description": "Video not found or not published"
+          }
+        }
+      }
+    },
+    "/public/home": {
+      "get": {
+        "summary": "Composed homepage feed for the reader site (public)",
+        "tags": [
+          "Public Home"
+        ],
+        "description": "One cacheable payload with lead/featured/trending/picks rails, latest articles, breaking items, per-category sections, videos, shorts, galleries, the latest e-paper edition, notices and the active poll.\n",
+        "responses": {
+          "200": {
+            "description": "Homepage feed"
+          }
+        }
+      }
+    },
+    "/public/galleries": {
+      "get": {
+        "summary": "List published photo galleries (public)",
+        "tags": [
+          "Public Galleries"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "categorySlug",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Published galleries"
+          }
+        }
+      }
+    },
+    "/public/galleries/{slug}": {
+      "get": {
+        "summary": "Get a published gallery by slug (public)",
+        "tags": [
+          "Public Galleries"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery with ordered images"
+          },
+          "404": {
+            "description": "Gallery not found"
+          }
+        }
+      }
+    },
+    "/public/epaper": {
+      "get": {
+        "summary": "List active e-paper editions, newest first (public)",
+        "tags": [
+          "Public E-paper"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "citySlug",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Editions plus the latest one"
+          }
+        }
+      }
+    },
+    "/public/epaper/{slug}": {
+      "get": {
+        "summary": "Get an active e-paper edition by slug (public)",
+        "tags": [
+          "Public E-paper"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Edition details with PDF URL"
+          },
+          "404": {
+            "description": "Edition not found"
+          }
+        }
+      }
+    },
+    "/public/cities": {
+      "get": {
+        "summary": "Active cities for the hyperlocal menu (public)",
+        "tags": [
+          "Public Cities"
+        ],
+        "responses": {
+          "200": {
+            "description": "Active cities ordered for display"
+          }
+        }
+      }
+    },
+    "/public/cities/{slug}": {
+      "get": {
+        "summary": "Get an active city by slug (public)",
+        "tags": [
+          "Public Cities"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City details"
+          },
+          "404": {
+            "description": "City not found"
+          }
+        }
+      }
+    },
+    "/public/categories": {
+      "get": {
+        "summary": "Active category tree for navigation (public)",
+        "tags": [
+          "Public Categories"
+        ],
+        "responses": {
+          "200": {
+            "description": "Main categories with active subcategories"
+          }
+        }
+      }
+    },
+    "/public/categories/{slug}": {
+      "get": {
+        "summary": "Get an active category by slug (public)",
+        "tags": [
+          "Public Categories"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "slug",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Category with subcategories"
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        }
+      }
+    },
     "/public/articles": {
       "get": {
         "summary": "List published articles for the reader site (public)",
@@ -787,7 +2342,7 @@
     },
     "/public/articles/{slug}": {
       "get": {
-        "summary": "Get a published article by slug (public)",
+        "summary": "Get a published article by slug or ObjectId (public)",
         "tags": [
           "Public Articles"
         ],
@@ -1040,6 +2595,36 @@
         }
       }
     },
+    "/public/articles/{id}/related": {
+      "get": {
+        "summary": "Related published articles from the same category (public)",
+        "tags": [
+          "Public Articles"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Related articles (no content bodies)"
+          }
+        }
+      }
+    },
     "/public/ads": {
       "get": {
         "summary": "Active ads for a reader-site slot (public)",
@@ -1106,6 +2691,222 @@
           },
           "429": {
             "description": "Too many click requests"
+          }
+        }
+      }
+    },
+    "/public/ads/impression": {
+      "post": {
+        "summary": "Record an ad impression (public)",
+        "tags": [
+          "Public Ads"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "adCampaignId",
+                  "adSlotId"
+                ],
+                "properties": {
+                  "adCampaignId": {
+                    "type": "string"
+                  },
+                  "adSlotId": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Impression recorded"
+          },
+          "404": {
+            "description": "Campaign or slot not found/inactive"
+          }
+        }
+      }
+    },
+    "/polls": {
+      "get": {
+        "summary": "List polls",
+        "tags": [
+          "Polls"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Polls list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a poll",
+        "tags": [
+          "Polls"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "question",
+                  "options"
+                ],
+                "properties": {
+                  "question": {
+                    "type": "string"
+                  },
+                  "options": {
+                    "type": "array",
+                    "minItems": 2,
+                    "maxItems": 6,
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "text"
+                      ],
+                      "properties": {
+                        "text": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Poll created"
+          }
+        }
+      }
+    },
+    "/polls/{id}": {
+      "get": {
+        "summary": "Get a poll by ID (includes live results)",
+        "tags": [
+          "Polls"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Poll details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a poll",
+        "tags": [
+          "Polls"
+        ],
+        "description": "Options cannot be added, removed or renamed once votes exist.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Poll updated"
+          },
+          "400": {
+            "description": "Options changed after votes were cast"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Close (deactivate) a poll",
+        "tags": [
+          "Polls"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Poll closed"
           }
         }
       }
@@ -1566,6 +3367,562 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/galleries": {
+      "get": {
+        "summary": "List galleries",
+        "tags": [
+          "Galleries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DRAFT",
+                "PUBLISHED"
+              ]
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Galleries list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a gallery",
+        "tags": [
+          "Galleries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "coverImage": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "images": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "required": [
+                        "imageUrl"
+                      ],
+                      "properties": {
+                        "imageUrl": {
+                          "type": "string"
+                        },
+                        "cloudinaryPublicId": {
+                          "type": "string"
+                        },
+                        "caption": {
+                          "type": "string"
+                        },
+                        "altText": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "DRAFT",
+                      "PUBLISHED"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Gallery created"
+          }
+        }
+      }
+    },
+    "/galleries/{id}": {
+      "get": {
+        "summary": "Get a gallery by ID",
+        "tags": [
+          "Galleries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a gallery",
+        "tags": [
+          "Galleries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a gallery",
+        "tags": [
+          "Galleries"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Gallery deleted"
+          }
+        }
+      }
+    },
+    "/epaper": {
+      "get": {
+        "summary": "List e-paper editions",
+        "tags": [
+          "E-paper"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "city",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Editions list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create an e-paper edition",
+        "tags": [
+          "E-paper"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "title",
+                  "editionDate",
+                  "pdfUrl"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "editionDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "city": {
+                    "type": "string"
+                  },
+                  "pdfUrl": {
+                    "type": "string"
+                  },
+                  "cloudinaryPublicId": {
+                    "type": "string"
+                  },
+                  "coverImageUrl": {
+                    "type": "string"
+                  },
+                  "pageCount": {
+                    "type": "number"
+                  },
+                  "fileSize": {
+                    "type": "string"
+                  },
+                  "blurb": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Edition created"
+          }
+        }
+      }
+    },
+    "/epaper/{id}": {
+      "get": {
+        "summary": "Get an e-paper edition by ID",
+        "tags": [
+          "E-paper"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Edition details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update an e-paper edition",
+        "tags": [
+          "E-paper"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Edition updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deactivate an e-paper edition",
+        "tags": [
+          "E-paper"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Edition deactivated"
+          }
+        }
+      }
+    },
+    "/cities": {
+      "get": {
+        "summary": "List cities",
+        "tags": [
+          "Cities"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cities list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a city",
+        "tags": [
+          "Cities"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "slug": {
+                    "type": "string"
+                  },
+                  "state": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "coverImage": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "order": {
+                    "type": "number"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "City created"
+          }
+        }
+      }
+    },
+    "/cities/{id}": {
+      "get": {
+        "summary": "Get a city by ID",
+        "tags": [
+          "Cities"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a city",
+        "tags": [
+          "Cities"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Deactivate a city",
+        "tags": [
+          "Cities"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "City deactivated"
           }
         }
       }
@@ -2305,6 +4662,58 @@
         "responses": {
           "200": {
             "description": "Article status updated"
+          }
+        }
+      }
+    },
+    "/articles/{id}/flags": {
+      "patch": {
+        "summary": "Toggle editorial flags on an article (homepage curation)",
+        "tags": [
+          "Articles"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "isLead": {
+                    "type": "boolean"
+                  },
+                  "isFeatured": {
+                    "type": "boolean"
+                  },
+                  "isTrending": {
+                    "type": "boolean"
+                  },
+                  "isEditorsPick": {
+                    "type": "boolean"
+                  },
+                  "isBreaking": {
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Flags updated"
           }
         }
       }

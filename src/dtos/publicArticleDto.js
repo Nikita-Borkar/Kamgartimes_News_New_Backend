@@ -7,7 +7,11 @@ const objectIdString = z
 
 const publicArticleQuerySchema = z.object({
   category: objectIdString.optional(),
+  categorySlug: z.string().trim().optional(),
+  city: objectIdString.optional(),
+  citySlug: z.string().trim().optional(),
   search: z.string().optional(),
+  tag: z.string().optional(),
   page: z.string().optional(),
   limit: z.string().optional(),
 });
@@ -27,9 +31,14 @@ const commentQuerySchema = z.object({
   limit: z.string().optional(),
 });
 
+const relatedQuerySchema = z.object({
+  limit: z.string().optional(),
+});
+
 module.exports = {
   publicArticleQuerySchema,
   reactionSchema,
   commentSchema,
   commentQuerySchema,
+  relatedQuerySchema,
 };

@@ -3,6 +3,7 @@ const {
   getArticleById,
   createArticle,
   updateArticle,
+  updateArticleFlags,
   updateArticleStatus,
   deleteArticle,
   moderateComment,
@@ -12,7 +13,7 @@ const successResponse = require("../errors/responses/successResponse");
 
 const list = async (req, res, next) => {
   try {
-    const result = await listArticles(req.query);
+    const result = await listArticles(req.validatedQuery);
     return res
       .status(200)
       .json(new successResponse(200, "Articles fetched successfully", result));
@@ -49,6 +50,21 @@ const update = async (req, res, next) => {
     return res
       .status(200)
       .json(new successResponse(200, "Article updated successfully", article));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const updateFlags = async (req, res, next) => {
+  try {
+    const result = await updateArticleFlags(
+      req.params.id,
+      req.validatedBody,
+      req.user.userId,
+    );
+    return res
+      .status(200)
+      .json(new successResponse(200, "Article flags updated successfully", result));
   } catch (err) {
     next(err);
   }
@@ -103,6 +119,7 @@ module.exports = {
   getById,
   create,
   update,
+  updateFlags,
   updateStatus,
   remove,
   moderateCommentStatus,

@@ -5,6 +5,7 @@ const {
   list,
   getBySlug,
   getById,
+  related,
   view,
   share,
   click,
@@ -21,6 +22,7 @@ const {
   reactionSchema,
   commentSchema,
   commentQuerySchema,
+  relatedQuerySchema,
 } = require("../../dtos/publicArticleDto");
 
 /**
@@ -51,7 +53,7 @@ const {
  * @swagger
  * /public/articles/{slug}:
  *   get:
- *     summary: Get a published article by slug (public)
+ *     summary: Get a published article by slug or ObjectId (public)
  *     tags: [Public Articles]
  *     parameters:
  *       - in: path
@@ -198,7 +200,27 @@ const {
  *         description: Comment created
  */
 
+/**
+ * @swagger
+ * /public/articles/{id}/related:
+ *   get:
+ *     summary: Related published articles from the same category (public)
+ *     tags: [Public Articles]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Related articles (no content bodies)
+ */
+
 // Counters first (they are parametric, single-segment siblings of /:slug)
+router.get("/:id/related", validate(relatedQuerySchema, "query"), related);
 router.post("/:id/view", view);
 router.post("/:id/share", share);
 router.post("/:id/clicks", click);
@@ -208,11 +230,11 @@ router.get("/:id/reactions", optionalAuthenticate, reactions);
 router.post("/:id/reactions", authenticate, validate(reactionSchema), toggleReaction);
 
 // Comments — read is public, write requires login
-router.get("/:id/comments", validate(commentQuerySchema), listComments);
+router.get("/:id/comments", validate(commentQuerySchema, "query"), listComments);
 router.post("/:id/comments", authenticate, validate(commentSchema), createComment);
 
 // Reader listings
-router.get("/", validate(publicArticleQuerySchema), list);
+router.get("/", validate(publicArticleQuerySchema, "query"), list);
 router.get("/:slug", getBySlug);
 
 module.exports = router;

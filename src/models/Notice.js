@@ -30,6 +30,14 @@ const noticeSchema = new mongoose.Schema(
       default: "",
     },
 
+    // Notice vs breaking strip
+    kind: {
+      type: String,
+      enum: ["NOTICE", "BREAKING"],
+      default: "NOTICE",
+      index: true,
+    },
+
     // Higher priority notices appear first in the ticker
     priority: {
       type: Number,
@@ -68,7 +76,7 @@ const noticeSchema = new mongoose.Schema(
   },
 );
 
-noticeSchema.index({ isActive: 1, priority: -1, createdAt: -1 });
+noticeSchema.index({ isActive: 1, kind: 1, priority: -1, createdAt: -1 });
 noticeSchema.index({ isActive: 1, startsAt: 1, endsAt: 1 });
 
 const Notice = mongoose.model("Notice", noticeSchema);

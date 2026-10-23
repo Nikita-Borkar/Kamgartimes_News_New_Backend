@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Article = require("../models/Article");
 const ArticleReaction = require("../models/ArticleReaction");
 const Comment = require("../models/Comment");
+const Category = require("../models/Category");
+const City = require("../models/City");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
 
@@ -19,13 +21,49 @@ const getPublishedArticle = async (id) => {
   return article;
 };
 
-const listPublishedArticles = async ({ category, search, page = 1, limit = 12 }) => {
+const resolveCategoryId = async (categorySlug) => {
+  const category = await Category.findOne({ slug: categorySlug.toLowerCase() }).select("_id");
+  if (!category) throw new NotFoundError("Category not found");
+  return category._id;
+};
+
+const resolveCityId = async (citySlug) => {
+  const city = await City.findOne({ slug: citySlug.toLowerCase() }).select("_id");
+  if (!city) throw new NotFoundError("City not found");
+  return city._id;
+};
+
+const listPublishedArticles = async ({
+  category,
+  categorySlug,
+  city,
+  citySlug,
+  search,
+  tag,
+  page = 1,
+  limit = 12,
+} = {}) => {
   const filter = { status: "PUBLISHED" };
+
   if (category) {
     assertValidId(category, "category");
     filter.category = category;
+  } else if (categorySlug) {
+    filter.category = await resolveCategoryId(categorySlug);
   }
-  if (search) filter.title = { $regex: escapeRegex(search), $options: "i" };
+
+  if (city) {
+    assertValidId(city, "city");
+    filter.city = city;
+  } else if (citySlug) {
+    filter.city = await resolveCityId(citySlug);
+  }
+
+  if (tag) filter.tags = tag;
+  if (search) {
+    const rx = { $regex: escapeRegex(search), $options: "i" };
+    filter.$or = [{ title: rx }, { summary: rx }, { tags: rx }];
+  }
 
   const pageNum = Math.max(parseInt(page) || 1, 1);
   const limitNum = Math.min(Math.max(parseInt(limit) || 12, 1), 50);
@@ -39,6 +77,7 @@ const listPublishedArticles = async ({ category, search, page = 1, limit = 12 })
       // Listing never ships the heavy rich-text body
       .select("-content")
       .populate("category", "name slug")
+      .populate("city", "name slug")
       .populate("author", "name"),
     Article.countDocuments(filter),
   ]);
@@ -46,13 +85,42 @@ const listPublishedArticles = async ({ category, search, page = 1, limit = 12 })
   return { articles, total, page: pageNum, limit: limitNum };
 };
 
+// Accepts either the public slug or a Mongo ObjectId so the website
+// (/news/[id]) and the mobile app can address the same endpoint.
 const getPublishedArticleBySlug = async (slug) => {
   if (!slug) throw new BadRequestError("Slug is required");
-  const article = await Article.findOne({ slug: slug.toLowerCase(), status: "PUBLISHED" })
+  const filter = mongoose.isValidObjectId(slug)
+    ? { _id: slug, status: "PUBLISHED" }
+    : { slug: slug.toLowerCase(), status: "PUBLISHED" };
+
+  const article = await Article.findOne(filter)
     .populate("category", "name slug")
+    .populate("city", "name slug")
     .populate("author", "name");
   if (!article) throw new NotFoundError("Article not found");
   return article;
+};
+
+// Related band: same category first, newest published, current article excluded.
+const getRelatedArticles = async (id, { limit = 3 } = {}) => {
+  assertValidId(id, "article");
+  const article = await Article.findOne({ _id: id, status: "PUBLISHED" }).select("category");
+  if (!article) throw new NotFoundError("Article not found");
+
+  const limitNum = Math.min(Math.max(parseInt(limit) || 3, 1), 10);
+
+  return Article.find({
+    _id: { $ne: article._id },
+    status: "PUBLISHED",
+    category: article.category,
+  })
+    .sort({ publishedAt: -1 })
+    .limit(limitNum)
+    .select("-content")
+    .populate("category", "name slug")
+    .populate("city", "name slug")
+    .populate("author", "name")
+    .lean();
 };
 
 // Public fire-and-forget counters: view / share / outbound link click
@@ -215,6 +283,7 @@ const createComment = async (id, userId, { body, parent }) => {
 module.exports = {
   listPublishedArticles,
   getPublishedArticleBySlug,
+  getRelatedArticles,
   getPublishedArticle,
   incrementStat,
   getReactions,

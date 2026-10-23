@@ -62,10 +62,15 @@ const mediaQuerySchema = z.object({
   limit: z.string().optional(),
 });
 
+const mediaIdParamSchema = z.object({
+  id: objectIdString,
+});
+
 module.exports = {
   createImageSchema,
   updateImageSchema,
   createVideoSchema,
   updateVideoSchema,
   mediaQuerySchema,
+  mediaIdParamSchema,
 };

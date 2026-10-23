@@ -50,6 +50,14 @@ const articleSchema = new mongoose.Schema(
       required: true,
     },
 
+    // Optional city classification for city pages
+    city: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "City",
+      default: null,
+      index: true,
+    },
+
     // Publishing workflow
     status: {
       type: String,
@@ -61,6 +69,18 @@ const articleSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    // Editorial flags for homepage curation
+    isLead: { type: Boolean, default: false, index: true },
+    isFeatured: { type: Boolean, default: false, index: true },
+    isTrending: { type: Boolean, default: false, index: true },
+    isEditorsPick: { type: Boolean, default: false, index: true },
+    isBreaking: { type: Boolean, default: false, index: true },
+
+    // Reader-facing extras
+    keyPoints: { type: [String], default: [] },
+    tags: { type: [String], default: [] },
+    readTime: { type: String, default: "" },
 
     // Denormalized reader interaction counters. Updated with $inc on each
     // interaction so article reads never need joins/aggregations.
@@ -113,6 +133,16 @@ const articleSchema = new mongoose.Schema(
 articleSchema.index({ status: 1, publishedAt: -1 });
 // Reader site: articles within a category
 articleSchema.index({ category: 1, publishedAt: -1 });
+// Homepage rails
+articleSchema.index({ status: 1, isBreaking: 1, publishedAt: -1 });
+articleSchema.index({ status: 1, isLead: 1, publishedAt: -1 });
+articleSchema.index({ status: 1, isFeatured: 1, publishedAt: -1 });
+articleSchema.index({ status: 1, isTrending: 1, publishedAt: -1 });
+articleSchema.index({ status: 1, isEditorsPick: 1, publishedAt: -1 });
+// City pages
+articleSchema.index({ status: 1, city: 1, publishedAt: -1 });
+// Tag search
+articleSchema.index({ tags: 1 });
 
 const Article = mongoose.model("Article", articleSchema);
 module.exports = Article;

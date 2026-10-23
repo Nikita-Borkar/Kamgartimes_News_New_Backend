@@ -130,6 +130,20 @@ const deleteStaticPage = async (id) => {
   return { id, isActive: page.isActive };
 };
 
+// Public: navigation list of active pages (header/footer menus)
+const listPublicStaticPages = async ({ showInHeader, showInFooter } = {}) => {
+  const filter = { isActive: true };
+  if (showInHeader !== undefined) filter.showInHeader = showInHeader === "true";
+  if (showInFooter !== undefined) filter.showInFooter = showInFooter === "true";
+
+  const pages = await StaticPage.find(filter)
+    .sort({ sortOrder: 1, title: 1 })
+    .select("title slug excerpt showInHeader showInFooter sortOrder")
+    .lean();
+
+  return { pages, total: pages.length };
+};
+
 // Public: get a published static page by slug
 const getPublicStaticPageBySlug = async (slug) => {
   const page = await StaticPage.findOne({ slug, isActive: true }).lean();
@@ -143,5 +157,6 @@ module.exports = {
   createStaticPage,
   updateStaticPage,
   deleteStaticPage,
+  listPublicStaticPages,
   getPublicStaticPageBySlug,
 };

@@ -17,6 +17,12 @@ const categorySchema = new mongoose.Schema(
       trim: true,
     },
 
+    description: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
     isActive: {
       type: Boolean,
       default: true,
@@ -28,14 +34,19 @@ const categorySchema = new mongoose.Schema(
       default: null,
       index: true,
     },
+
+    order: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-categorySchema.index({ parent: 1, order: 1 });
-categorySchema.index({ parent: 1, isActive: 1 });
+categorySchema.index({ parent: 1, order: 1, isActive: 1 });
 
 const Category = mongoose.model("Category", categorySchema);
 

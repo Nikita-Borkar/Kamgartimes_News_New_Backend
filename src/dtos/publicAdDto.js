@@ -17,6 +17,12 @@ const adClickSchema = z.object({
   adSlotId: z.preprocess(emptyToUndefined, objectIdString),
 });
 
+// POST /public/ads/impression
+const adImpressionSchema = z.object({
+  adCampaignId: z.preprocess(emptyToUndefined, objectIdString),
+  adSlotId: z.preprocess(emptyToUndefined, objectIdString),
+});
+
 // GET /ad-stats/clicks
 const adClickStatsQuerySchema = z.object({
   campaign: z.preprocess(emptyToUndefined, objectIdString.optional()),
@@ -28,5 +34,6 @@ const adClickStatsQuerySchema = z.object({
 module.exports = {
   publicAdQuerySchema,
   adClickSchema,
+  adImpressionSchema,
   adClickStatsQuerySchema,
 };

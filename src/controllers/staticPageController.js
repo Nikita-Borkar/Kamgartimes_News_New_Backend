@@ -4,6 +4,7 @@ const {
   createStaticPage,
   updateStaticPage,
   deleteStaticPage,
+  listPublicStaticPages,
   getPublicStaticPageBySlug,
 } = require("../services/staticPageService");
 const successResponse = require("../errors/responses/successResponse");
@@ -63,6 +64,17 @@ const remove = async (req, res, next) => {
   }
 };
 
+const publicList = async (req, res, next) => {
+  try {
+    const result = await listPublicStaticPages(req.validatedQuery || {});
+    return res
+      .status(200)
+      .json(new successResponse(200, "Static pages fetched successfully", result));
+  } catch (err) {
+    next(err);
+  }
+};
+
 const getPublicBySlug = async (req, res, next) => {
   try {
     const page = await getPublicStaticPageBySlug(req.params.slug);
@@ -80,5 +92,6 @@ module.exports = {
   create,
   update,
   remove,
+  publicList,
   getPublicBySlug,
 };
