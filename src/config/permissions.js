@@ -1,4 +1,7 @@
 const PERMISSIONS = {
+  // Admin dashboard overview
+  DASHBOARD_READ: "dashboard:read",
+
   // User management
   USER_READ: "user:read",
   USER_UPDATE: "user:update",
@@ -88,11 +91,22 @@ const PERMISSIONS = {
   // Public submissions inbox (tips, reporter applications, ad leads, contact)
   SUBMISSION_READ: "submission:read",
   SUBMISSION_UPDATE: "submission:update",
+
+  // Live News (breaking live stories shown on reader site)
+  LIVE_NEWS_READ: "liveNews:read",
+  LIVE_NEWS_CREATE: "liveNews:create",
+  LIVE_NEWS_UPDATE: "liveNews:update",
+  LIVE_NEWS_DELETE: "liveNews:delete",
 };
 
 // Grouped view used by the API/frontend so the UI can render
 // checkboxes per section instead of one long flat list.
 const PERMISSION_GROUPS = [
+  {
+    resource: "dashboard",
+    label: "Dashboard",
+    permissions: [PERMISSIONS.DASHBOARD_READ],
+  },
   {
     resource: "user",
     label: "Users",
@@ -243,6 +257,16 @@ const PERMISSION_GROUPS = [
     permissions: [
       PERMISSIONS.SUBMISSION_READ,
       PERMISSIONS.SUBMISSION_UPDATE,
+    ],
+  },
+  {
+    resource: "liveNews",
+    label: "Live News",
+    permissions: [
+      PERMISSIONS.LIVE_NEWS_READ,
+      PERMISSIONS.LIVE_NEWS_CREATE,
+      PERMISSIONS.LIVE_NEWS_UPDATE,
+      PERMISSIONS.LIVE_NEWS_DELETE,
     ],
   },
 ];

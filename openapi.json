@@ -2081,6 +2081,28 @@
         }
       }
     },
+    "/public/live-news": {
+      "get": {
+        "summary": "Active live news items for the reader site (public)",
+        "tags": [
+          "Public Live News"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Active live news items ordered by priority and go-live time"
+          }
+        }
+      }
+    },
     "/public/home": {
       "get": {
         "summary": "Composed homepage feed for the reader site (public)",
@@ -2591,6 +2613,42 @@
         "responses": {
           "201": {
             "description": "Comment created"
+          }
+        }
+      }
+    },
+    "/public/articles/ticker": {
+      "get": {
+        "summary": "Latest news ticker — published articles from the last 24 hours (public)",
+        "tags": [
+          "Public Articles"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "categorySlug",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Latest published articles (last 24h), newest first, without content bodies"
           }
         }
       }
@@ -3143,6 +3201,249 @@
           },
           "404": {
             "description": "Notice not found"
+          }
+        }
+      }
+    },
+    "/live-news": {
+      "get": {
+        "summary": "List live news items (admin)",
+        "tags": [
+          "Live News"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "isActive",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "search",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live news list"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a live news item",
+        "tags": [
+          "Live News"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "heading",
+                  "linkUrl",
+                  "category"
+                ],
+                "properties": {
+                  "heading": {
+                    "type": "string",
+                    "example": "Metro service delayed on Blue Line"
+                  },
+                  "linkText": {
+                    "type": "string",
+                    "example": "Read More"
+                  },
+                  "linkUrl": {
+                    "type": "string",
+                    "example": "/news/metro-delay"
+                  },
+                  "category": {
+                    "type": "string",
+                    "example": "64f8a1b2c3d4e5f6a7b8c9d0"
+                  },
+                  "isActive": {
+                    "type": "boolean",
+                    "example": true
+                  },
+                  "priority": {
+                    "type": "number",
+                    "example": 10
+                  },
+                  "publishedAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2026-10-23T06:00:00.000Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Live news item created"
+          },
+          "400": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/live-news/{id}": {
+      "get": {
+        "summary": "Get a live news item by ID (admin)",
+        "tags": [
+          "Live News"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live news item details"
+          },
+          "404": {
+            "description": "Live news item not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a live news item",
+        "tags": [
+          "Live News"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "heading": {
+                    "type": "string"
+                  },
+                  "linkText": {
+                    "type": "string"
+                  },
+                  "linkUrl": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "isActive": {
+                    "type": "boolean"
+                  },
+                  "priority": {
+                    "type": "number"
+                  },
+                  "publishedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Live news item updated"
+          },
+          "404": {
+            "description": "Live news item not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a live news item",
+        "tags": [
+          "Live News"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Live news item deleted"
+          },
+          "404": {
+            "description": "Live news item not found"
           }
         }
       }
@@ -3759,6 +4060,44 @@
         "responses": {
           "200": {
             "description": "Edition deactivated"
+          }
+        }
+      }
+    },
+    "/dashboard": {
+      "get": {
+        "summary": "Admin dashboard overview",
+        "description": "Aggregate counts, daily series and small previews across all admin modules.",
+        "tags": [
+          "Dashboard"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "range",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "7d",
+                "30d",
+                "90d"
+              ],
+              "default": "30d"
+            },
+            "description": "Reporting window for in-range counts and daily series"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard summary, series, editorial queue and previews"
+          },
+          "403": {
+            "description": "Missing dashboard:read permission"
           }
         }
       }

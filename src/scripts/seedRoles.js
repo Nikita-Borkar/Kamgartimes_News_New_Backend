@@ -10,6 +10,7 @@ dotenv.config();
 const ADMIN_PERMISSIONS = ALL_PERMISSIONS.slice();
 
 const EDITOR_PERMISSIONS = [
+  "dashboard:read",
   "category:read",
   "category:create",
   "category:update",
@@ -54,6 +55,10 @@ const EDITOR_PERMISSIONS = [
   "poll:delete",
   "submission:read",
   "submission:update",
+  "liveNews:read",
+  "liveNews:create",
+  "liveNews:update",
+  "liveNews:delete",
 ];
 
 const USER_PERMISSIONS = ["article:read"];

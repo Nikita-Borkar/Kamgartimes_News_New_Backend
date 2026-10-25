@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const authRoutes = require("./v1/auth.route");
+const dashboardRoutes = require("./v1/dashboard.route");
 const healthRoutes = require("./v1/health.route");
 const roleRoutes = require("./v1/role.route");
 const userRoutes = require("./v1/user.route");
@@ -35,8 +36,11 @@ const publicEpaperRoutes = require("./v1/publicEpaper.route");
 const pollRoutes = require("./v1/poll.route");
 const publicPollRoutes = require("./v1/publicPoll.route");
 const submissionRoutes = require("./v1/submission.route");
+const liveNewsRoutes = require("./v1/liveNews.route");
+const publicLiveNewsRoutes = require("./v1/publicLiveNews.route");
 
 router.use("/auth", authRoutes);
+router.use("/dashboard", dashboardRoutes);
 router.use("/health", healthRoutes);
 router.use("/roles", roleRoutes);
 router.use("/users", userRoutes);
@@ -48,6 +52,8 @@ router.use("/media/videos", videoMediaRoutes);
 router.use("/public/media", publicMediaRoutes);
 router.use("/notices", noticeRoutes);
 router.use("/public/notices", publicNoticeRoutes);
+router.use("/live-news", liveNewsRoutes);
+router.use("/public/live-news", publicLiveNewsRoutes);
 router.use("/ad-slots", adSlotRoutes);
 router.use("/ad-campaigns", adCampaignRoutes);
 router.use("/ad-placements", adPlacementRoutes);

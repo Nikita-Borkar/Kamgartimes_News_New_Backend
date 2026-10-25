@@ -132,6 +132,25 @@ const createComment = async (req, res, next) => {
   }
 };
 
+const ticker = async (req, res, next) => {
+  try {
+    const articles = await publicArticleService.listLatestNewsTicker(
+      req.validatedQuery
+    );
+    return res
+      .status(200)
+      .json(
+        new successResponse(
+          200,
+          "Latest news ticker fetched successfully",
+          articles
+        )
+      );
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   list,
   getBySlug,
@@ -144,4 +163,5 @@ module.exports = {
   toggleReaction,
   listComments,
   createComment,
+  ticker,
 };

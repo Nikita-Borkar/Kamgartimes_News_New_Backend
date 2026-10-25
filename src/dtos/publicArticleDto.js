@@ -35,10 +35,17 @@ const relatedQuerySchema = z.object({
   limit: z.string().optional(),
 });
 
+const tickerQuerySchema = z.object({
+  category: objectIdString.optional(),
+  categorySlug: z.string().trim().optional(),
+  limit: z.string().optional(),
+});
+
 module.exports = {
   publicArticleQuerySchema,
   reactionSchema,
   commentSchema,
   commentQuerySchema,
   relatedQuerySchema,
+  tickerQuerySchema,
 };

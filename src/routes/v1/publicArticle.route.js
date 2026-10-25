@@ -13,6 +13,7 @@ const {
   toggleReaction,
   listComments,
   createComment,
+  ticker,
 } = require("../../controllers/publicArticleController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
@@ -23,6 +24,7 @@ const {
   commentSchema,
   commentQuerySchema,
   relatedQuerySchema,
+  tickerQuerySchema,
 } = require("../../dtos/publicArticleDto");
 
 /**
@@ -202,6 +204,27 @@ const {
 
 /**
  * @swagger
+ * /public/articles/ticker:
+ *   get:
+ *     summary: Latest news ticker — published articles from the last 24 hours (public)
+ *     tags: [Public Articles]
+ *     parameters:
+ *       - in: query
+ *         name: category
+ *         schema: { type: string }
+ *       - in: query
+ *         name: categorySlug
+ *         schema: { type: string }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: Latest published articles (last 24h), newest first, without content bodies
+ */
+
+/**
+ * @swagger
  * /public/articles/{id}/related:
  *   get:
  *     summary: Related published articles from the same category (public)
@@ -233,7 +256,8 @@ router.post("/:id/reactions", authenticate, validate(reactionSchema), toggleReac
 router.get("/:id/comments", validate(commentQuerySchema, "query"), listComments);
 router.post("/:id/comments", authenticate, validate(commentSchema), createComment);
 
-// Reader listings
+// Reader listings — static "/ticker" must come before parametric "/:slug"
+router.get("/ticker", validate(tickerQuerySchema, "query"), ticker);
 router.get("/", validate(publicArticleQuerySchema, "query"), list);
 router.get("/:slug", getBySlug);
 

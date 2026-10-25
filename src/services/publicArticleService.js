@@ -248,6 +248,38 @@ const listComments = async (id, { page = 1, limit = 10 }) => {
   return { comments, total, page: pageNum, limit: limitNum };
 };
 
+// Public latest-news ticker: published articles from the last 24 hours,
+// newest first. Optional category filter by ObjectId or slug.
+const listLatestNewsTicker = async ({
+  category,
+  categorySlug,
+  limit = 20,
+} = {}) => {
+  const now = new Date();
+  const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+
+  const filter = {
+    status: "PUBLISHED",
+    publishedAt: { $gte: twentyFourHoursAgo },
+  };
+
+  if (category) {
+    assertValidId(category, "category");
+    filter.category = category;
+  } else if (categorySlug) {
+    filter.category = await resolveCategoryId(categorySlug);
+  }
+
+  const limitNum = Math.min(Math.max(parseInt(limit) || 20, 1), 50);
+
+  return Article.find(filter)
+    .sort({ publishedAt: -1 })
+    .limit(limitNum)
+    .select("-content")
+    .populate("category", "name slug")
+    .populate("author", "name");
+};
+
 // Login-only. New comments are auto-approved; moderators can hide them later.
 const createComment = async (id, userId, { body, parent }) => {
   await getPublishedArticle(id);
@@ -290,5 +322,6 @@ module.exports = {
   toggleReaction,
   listComments,
   createComment,
+  listLatestNewsTicker,
 };
 
