@@ -1,6 +1,12 @@
 const z = require("zod");
 const mongoose = require("mongoose");
-const { emptyToUndefined, booleanish, intish, dateField } = require("./adShared");
+const {
+  emptyToUndefined,
+  booleanish,
+  intish,
+  startDateField,
+  endDateField,
+} = require("./adShared");
 
 const objectIdString = z
   .string()
@@ -9,8 +15,8 @@ const objectIdString = z
 const createAdPlacementSchema = z.object({
   adSlot: z.preprocess(emptyToUndefined, objectIdString),
   adCampaign: z.preprocess(emptyToUndefined, objectIdString),
-  startDate: dateField.default(null),
-  endDate: dateField.default(null),
+  startDate: startDateField.default(null),
+  endDate: endDateField.default(null),
   isActive: booleanish.default(true),
   weight: intish(1, 100).default(1),
 });
@@ -18,8 +24,8 @@ const createAdPlacementSchema = z.object({
 const updateAdPlacementSchema = z.object({
   adSlot: z.preprocess(emptyToUndefined, objectIdString.optional()),
   adCampaign: z.preprocess(emptyToUndefined, objectIdString.optional()),
-  startDate: dateField.optional(),
-  endDate: dateField.optional(),
+  startDate: startDateField.optional(),
+  endDate: endDateField.optional(),
   isActive: booleanish,
   weight: intish(1, 100),
 });

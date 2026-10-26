@@ -40,13 +40,15 @@ const weightedShuffle = (items) => {
 // highest-priority active placements first, weighted rotation inside a
 // priority tier, capped at the slot's maxAds.
 const getAdsForSlot = async (slotKey) => {
-  const slot = await AdSlot.findOne({ key: slotKey, isActive: true });
+  // Treat a missing isActive flag as active. Older slot records were created
+  // without the field, and the admin UI already shows them as active.
+  const slot = await AdSlot.findOne({ key: slotKey, isActive: { $ne: false } });
   if (!slot) throw new NotFoundError("Ad slot not found");
 
   const now = new Date();
   const placements = await AdPlacement.find({
     adSlot: slot._id,
-    isActive: true,
+    isActive: { $ne: false },
     $and: [
       { $or: [{ startDate: null }, { startDate: { $lte: now } }] },
       { $or: [{ endDate: null }, { endDate: { $gte: now } }] },
@@ -57,7 +59,7 @@ const getAdsForSlot = async (slotKey) => {
   const candidates = [];
   for (const placement of placements) {
     const campaign = placement.adCampaign;
-    if (!campaign || !campaign.isActive) continue;
+    if (!campaign || campaign.isActive === false) continue;
     if (!inWindow(campaign.startDate, campaign.endDate, now)) continue;
     if (seenCampaigns.has(String(campaign._id))) continue;
     seenCampaigns.add(String(campaign._id));
@@ -80,6 +82,7 @@ const getAdsForSlot = async (slotKey) => {
       ads.push({
         adCampaignId: placement.adCampaign._id,
         adSlotId: slot._id,
+        title: placement.adCampaign.title,
         imageUrl: placement.adCampaign.imageUrl,
         imageAlt: placement.adCampaign.imageAlt || placement.adCampaign.title,
         clickUrl: placement.adCampaign.clickUrl,
@@ -113,8 +116,8 @@ const recordClick = async ({ adCampaignId, adSlotId, ipAddress, userAgent }) => 
     AdCampaign.findById(adCampaignId),
     AdSlot.findById(adSlotId),
   ]);
-  if (!campaign || !campaign.isActive) throw new NotFoundError("Ad campaign not found");
-  if (!slot || !slot.isActive) throw new NotFoundError("Ad slot not found");
+  if (!campaign || campaign.isActive === false) throw new NotFoundError("Ad campaign not found");
+  if (!slot || slot.isActive === false) throw new NotFoundError("Ad slot not found");
 
   await AdClick.create({
     adCampaign: campaign._id,
@@ -136,8 +139,8 @@ const recordImpression = async ({ adCampaignId, adSlotId, ipAddress, userAgent }
     AdCampaign.findById(adCampaignId),
     AdSlot.findById(adSlotId),
   ]);
-  if (!campaign || !campaign.isActive) throw new NotFoundError("Ad campaign not found");
-  if (!slot || !slot.isActive) throw new NotFoundError("Ad slot not found");
+  if (!campaign || campaign.isActive === false) throw new NotFoundError("Ad campaign not found");
+  if (!slot || slot.isActive === false) throw new NotFoundError("Ad slot not found");
 
   await Promise.all([
     AdImpression.create({

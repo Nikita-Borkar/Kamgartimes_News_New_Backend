@@ -5,17 +5,31 @@ const User = require("../models/User");
 
 dotenv.config();
 
-// The fixed reader-site positions agreed with the frontend. Keys are the
-// contract: the site requests /public/ads?slot=<key>.
+// The fixed reader-site positions. Keys are the contract: the site requests
+// /public/ads?slot=<key>. Keep this list in sync with the slotKey props in the
+// Hindi website.
 const DEFAULT_SLOTS = [
-  { name: "Hero Leaderboard", key: "hero_leaderboard", section: "hero", width: 970, height: 250, position: 0 },
-  { name: "Sidebar Rectangle", key: "sidebar_rectangle", section: "sidebar", width: 300, height: 250, position: 0 },
-  { name: "In-Article Middle", key: "in_article_middle", section: "article", width: 300, height: 250, position: 0 },
-  { name: "Mobile Header", key: "mobile_header", section: "mobile", width: 320, height: 50, position: 0 },
-  { name: "Footer Banner", key: "footer_banner", section: "footer", width: 728, height: 90, position: 0 },
-  { name: "Category Page Top", key: "category_top", section: "category", width: 468, height: 60, position: 0 },
-  { name: "Skyscraper", key: "sidebar_skyscraper", section: "sidebar", width: 160, height: 600, position: 1 },
-  { name: "Sticky Bottom", key: "sticky_bottom", section: "mobile", width: 320, height: 50, position: 1 },
+  { name: "Hero Billboard", key: "hero_leaderboard", section: "hero", width: 970, height: 250, position: 0 },
+  { name: "Lead Grid Rail", key: "article_top", section: "home", width: 240, height: 420, position: 0 },
+  { name: "Trending / Features Sidebar", key: "sidebar_square", section: "sidebar", width: 300, height: 250, position: 0 },
+  { name: "Home Weather Ad", key: "home_mid_3", section: "home", width: 300, height: 300, position: 1 },
+  { name: "Home Poll Ad", key: "home_mid_4", section: "home", width: 300, height: 300, position: 2 },
+  { name: "Home Between Sections 1", key: "home_between_1", section: "home", width: 970, height: 110, position: 3 },
+  { name: "Home Between Sections 2", key: "home_between_2", section: "home", width: 970, height: 110, position: 4 },
+  { name: "Home Between Sections 3", key: "home_between_3", section: "home", width: 970, height: 110, position: 5 },
+  { name: "Home Between Sections 4", key: "home_between_4", section: "home", width: 970, height: 110, position: 6 },
+];
+
+// Earlier versions of this script seeded these positions. The reader site
+// never requests them, so switch them off to keep the admin list honest.
+const OBSOLETE_KEYS = [
+  "sidebar_rectangle",
+  "in_article_middle",
+  "mobile_header",
+  "footer_banner",
+  "category_top",
+  "sidebar_skyscraper",
+  "sticky_bottom",
 ];
 
 const seedAdSlots = async () => {
@@ -55,6 +69,26 @@ const seedAdSlots = async () => {
         { upsert: true },
       );
       console.log(`Seeded ad slot: ${slot.key} (${slot.width}x${slot.height})`);
+    }
+
+    // Older records may be missing isActive entirely. Mongo's find({isActive:
+    // true}) does not match a missing field, so repair them on every seed.
+    const repaired = await AdSlot.updateMany(
+      { key: { $in: DEFAULT_SLOTS.map((slot) => slot.key) }, isActive: { $exists: false } },
+      { $set: { isActive: true } },
+    );
+    if (repaired.modifiedCount) {
+      console.log(`Repaired missing isActive on ${repaired.modifiedCount} slot(s)`);
+    }
+
+    const deactivated = await AdSlot.updateMany(
+      { key: { $in: OBSOLETE_KEYS }, isActive: true },
+      { $set: { isActive: false } },
+    );
+    if (deactivated.modifiedCount) {
+      console.log(
+        `Deactivated ${deactivated.modifiedCount} obsolete slot(s): ${OBSOLETE_KEYS.join(", ")}`,
+      );
     }
 
     console.log("Ad slot seeding completed");

@@ -34,8 +34,9 @@ const allowedOrigins = (process.env.CORS_ORIGINS || "")
   .split(",")
   .map((origin) => origin.trim())
   .filter(Boolean);
-const corsOrigins = allowedOrigins.length
-  ? [...new Set([...defaultOrigins, ...allowedOrigins])]
+const corsOrigins =
+  allowedOrigins.length ?
+    [...new Set([...defaultOrigins, ...allowedOrigins])]
   : defaultOrigins;
 
 app.use(
@@ -51,7 +52,7 @@ app.use(
 
 // Rate limiting must be registered before the routes it protects.
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 1 * 60 * 1000,
   max: 300,
   standardHeaders: true,
   legacyHeaders: false,

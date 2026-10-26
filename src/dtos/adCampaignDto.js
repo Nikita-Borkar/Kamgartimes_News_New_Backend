@@ -1,5 +1,11 @@
 const z = require("zod");
-const { booleanish, intish, enumish, dateField } = require("./adShared");
+const {
+  booleanish,
+  intish,
+  enumish,
+  startDateField,
+  endDateField,
+} = require("./adShared");
 
 // Absolute http(s) URL or a root-relative path on the reader site
 const clickUrl = z
@@ -21,8 +27,8 @@ const createAdCampaignSchema = z.object({
   target: enumish(["_blank", "_self"]).default("_blank"),
   priority: intish(-1000, 1000).default(0),
   isActive: booleanish.default(true),
-  startDate: dateField.default(null),
-  endDate: dateField.default(null),
+  startDate: startDateField.default(null),
+  endDate: endDateField.default(null),
 });
 
 const updateAdCampaignSchema = z.object({
@@ -32,8 +38,8 @@ const updateAdCampaignSchema = z.object({
   target: enumish(["_blank", "_self"]),
   priority: intish(-1000, 1000),
   isActive: booleanish,
-  startDate: dateField.optional(),
-  endDate: dateField.optional(),
+  startDate: startDateField.optional(),
+  endDate: endDateField.optional(),
 });
 
 const adCampaignQuerySchema = z.object({
