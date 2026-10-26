@@ -64,6 +64,15 @@ app.use("/api/v1", limiter);
 const apiRoutes = require("./routes/index");
 app.use("/api/v1", apiRoutes);
 
+// Root health / status check
+app.get("/", (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Kamgar Times Backend API is running",
+    docs: "/api-docs",
+  });
+});
+
 // Catch-all as middleware: Express 5 no longer accepts a bare "*" path.
 app.use(notFound);
 app.use(globalErrorHandler);
