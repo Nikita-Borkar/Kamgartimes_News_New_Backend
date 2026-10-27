@@ -7,7 +7,7 @@ const Role = require("../models/Role");
 const { generateTokenPair } = require("../utils/tokens");
 const { loginUser, registerUser } = require("../dtos/usersDto");
 const { refreshTokenDto } = require("../dtos/tokenPayloadDto");
-const ForbiddenError = require("../errors/customErrors/forbiddenError");
+const ForbiddenError = require("../errors/customErrors/ForbiddenError");
 
 const registerUserService = async ({ name, email, password }) => {
   registerUser.parse({ name, email, password }); // Zod validation
