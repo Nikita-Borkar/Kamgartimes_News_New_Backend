@@ -27,8 +27,12 @@ app.use(helmet());
 const defaultOrigins = [
   "http://localhost:3001",
   "http://localhost:3000",
+  "http://localhost:8081",
+  "http://localhost:19006",
   "http://127.0.0.1:3001",
   "http://127.0.0.1:3000",
+  "http://127.0.0.1:8081",
+  "http://127.0.0.1:19006",
 ];
 const allowedOrigins = (process.env.CORS_ORIGINS || "")
   .split(",")
@@ -43,7 +47,16 @@ app.use(
   cors({
     origin: (origin, callback) => {
       // Same-origin, curl and native apps send no Origin header.
-      if (!origin || corsOrigins.includes(origin)) return callback(null, true);
+      if (
+        !origin ||
+        corsOrigins.includes(origin) ||
+        /^https?:\/\/localhost(:\d+)?$/.test(origin) ||
+        /^https?:\/\/127\.0\.0\.1(:\d+)?$/.test(origin) ||
+        /^https?:\/\/10\.\d+\.\d+\.\d+(:\d+)?$/.test(origin) ||
+        /^https?:\/\/192\.168\.\d+\.\d+(:\d+)?$/.test(origin)
+      ) {
+        return callback(null, true);
+      }
       return callback(new Error(`Origin ${origin} is not allowed by CORS`));
     },
     credentials: true,
