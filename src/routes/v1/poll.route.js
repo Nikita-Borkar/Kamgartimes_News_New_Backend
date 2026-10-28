@@ -55,7 +55,7 @@ const {
  *               options:
  *                 type: array
  *                 minItems: 2
- *                 maxItems: 6
+ *                 maxItems: 3
  *                 items:
  *                   type: object
  *                   required: [text]

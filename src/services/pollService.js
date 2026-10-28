@@ -22,8 +22,6 @@ const toPublicPoll = (poll) => {
     _id: poll._id,
     question: poll.question,
     totalVotes,
-    startDate: poll.startDate,
-    endDate: poll.endDate,
     options: (poll.options || []).map((option) => ({
       _id: option._id,
       text: option.text,

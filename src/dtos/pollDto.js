@@ -11,7 +11,7 @@ const pollOptionSchema = z.object({
 
 const createPollSchema = z.object({
   question: z.string().min(1).max(500),
-  options: z.array(pollOptionSchema).min(2).max(6),
+  options: z.array(pollOptionSchema).min(2).max(3),
   isActive: z.boolean().optional().default(true),
   startDate: z.coerce.date().optional().nullable(),
   endDate: z.coerce.date().optional().nullable(),
@@ -19,7 +19,7 @@ const createPollSchema = z.object({
 
 const updatePollSchema = z.object({
   question: z.string().min(1).max(500).optional(),
-  options: z.array(pollOptionSchema).min(2).max(6).optional(),
+  options: z.array(pollOptionSchema).min(2).max(3).optional(),
   isActive: z.boolean().optional(),
   startDate: z.coerce.date().optional().nullable(),
   endDate: z.coerce.date().optional().nullable(),

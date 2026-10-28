@@ -44,8 +44,12 @@ const getQuestionOfTheDayById = async (id) => {
 };
 
 const createQuestionOfTheDay = async (body, userId) => {
+  const now = new Date();
+  const defaultEndDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
   const question = await QuestionOfTheDay.create({
     ...body,
+    startDate: body.startDate || now,
+    endDate: body.endDate || defaultEndDate,
     createdBy: userId,
     updatedBy: userId,
   });
@@ -63,7 +67,6 @@ const updateQuestionOfTheDay = async (id, body, userId) => {
     "question",
     "options",
     "correctAnswer",
-    "explanation",
     "isActive",
     "startDate",
     "endDate",
@@ -143,7 +146,6 @@ const checkTodayAnswer = async ({ answer, category } = {}) => {
     id: question._id,
     isCorrect,
     correctAnswer: question.correctAnswer,
-    explanation: question.explanation || "",
   };
 };
 
