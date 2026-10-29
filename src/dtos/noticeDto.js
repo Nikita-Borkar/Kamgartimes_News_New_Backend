@@ -7,24 +7,18 @@ const dateField = z.preprocess(
 );
 
 const createNoticeSchema = z.object({
-  title: z.string().min(1).max(200),
   message: z.string().min(1).max(1000),
   linkUrl: z.string().max(500).optional().default(""),
-  linkText: z.string().max(60).optional().default(""),
   kind: z.enum(["NOTICE", "BREAKING"]).optional().default("NOTICE"),
-  priority: z.number().int().optional().default(0),
   isActive: z.boolean().optional().default(true),
   startsAt: dateField.default(null),
   endsAt: dateField.default(null),
 });
 
 const updateNoticeSchema = z.object({
-  title: z.string().min(1).max(200).optional(),
   message: z.string().min(1).max(1000).optional(),
   linkUrl: z.string().max(500).optional(),
-  linkText: z.string().max(60).optional(),
   kind: z.enum(["NOTICE", "BREAKING"]).optional(),
-  priority: z.number().int().optional(),
   isActive: z.boolean().optional(),
   startsAt: dateField.optional(),
   endsAt: dateField.optional(),

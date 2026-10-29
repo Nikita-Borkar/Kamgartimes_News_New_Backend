@@ -71,23 +71,14 @@ const {
  *         application/json:
  *           schema:
  *             type: object
- *             required: [title, message]
+ *             required: [message]
  *             properties:
- *               title:
- *                 type: string
- *                 example: Office closed on Diwali
  *               message:
  *                 type: string
  *                 example: All offices will remain closed on 20th Oct.
  *               linkUrl:
  *                 type: string
  *                 example: /news/diwali-holiday-order
- *               linkText:
- *                 type: string
- *                 example: Read Order
- *               priority:
- *                 type: number
- *                 example: 10
  *               isActive:
  *                 type: boolean
  *                 example: true
@@ -125,12 +116,9 @@ const {
  *           schema:
  *             type: object
  *             properties:
- *               title: { type: string }
- *               message: { type: string }
+*               message: { type: string }
  *               linkUrl: { type: string }
- *               linkText: { type: string }
- *               priority: { type: number }
- *               isActive: { type: boolean }
+*               isActive: { type: boolean }
  *               startsAt: { type: string, format: date-time }
  *               endsAt: { type: string, format: date-time }
  *     responses:

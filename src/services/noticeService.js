@@ -20,8 +20,7 @@ const listNotices = async ({ isActive, kind, search, page = 1, limit = 20 } = {}
   if (isActive !== undefined) filter.isActive = isActive === "true";
   if (kind) filter.kind = kind;
   if (search) {
-    const rx = { $regex: escapeRegex(search), $options: "i" };
-    filter.$or = [{ title: rx }, { message: rx }];
+    filter.message = { $regex: escapeRegex(search), $options: "i" };
   }
 
   const pageNum = Math.max(parseInt(page) || 1, 1);
@@ -30,7 +29,7 @@ const listNotices = async ({ isActive, kind, search, page = 1, limit = 20 } = {}
 
   const [notices, total] = await Promise.all([
     Notice.find(filter)
-      .sort({ priority: -1, createdAt: -1 })
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limitNum)
       .populate("createdBy", "name")
@@ -51,18 +50,14 @@ const getNoticeById = async (id) => {
 };
 
 const createNotice = async (body, userId) => {
-  const { title, message, linkUrl, linkText, kind, priority, isActive, startsAt, endsAt } =
-    body;
+  const { message, linkUrl, kind, isActive, startsAt, endsAt } = body;
 
   assertValidWindow(startsAt, endsAt);
 
   const notice = await Notice.create({
-    title,
     message,
     linkUrl: linkUrl || "",
-    linkText: linkText || "",
     kind: kind || "NOTICE",
-    priority: priority || 0,
     isActive: isActive !== undefined ? isActive : true,
     startsAt: startsAt || null,
     endsAt: endsAt || null,
@@ -78,19 +73,15 @@ const updateNotice = async (id, body, userId) => {
   const notice = await Notice.findById(id);
   if (!notice) throw new NotFoundError("Notice not found");
 
-  const { title, message, linkUrl, linkText, kind, priority, isActive, startsAt, endsAt } =
-    body;
+  const { message, linkUrl, kind, isActive, startsAt, endsAt } = body;
 
   const nextStartsAt = startsAt !== undefined ? startsAt : notice.startsAt;
   const nextEndsAt = endsAt !== undefined ? endsAt : notice.endsAt;
   assertValidWindow(nextStartsAt, nextEndsAt);
 
-  if (title !== undefined) notice.title = title;
   if (message !== undefined) notice.message = message;
   if (linkUrl !== undefined) notice.linkUrl = linkUrl;
-  if (linkText !== undefined) notice.linkText = linkText;
   if (kind !== undefined) notice.kind = kind;
-  if (priority !== undefined) notice.priority = priority;
   if (isActive !== undefined) notice.isActive = isActive;
   if (startsAt !== undefined) notice.startsAt = startsAt;
   if (endsAt !== undefined) notice.endsAt = endsAt;
@@ -109,8 +100,7 @@ const deleteNotice = async (id) => {
   return { id };
 };
 
-// Public ticker feed: active notices inside their scheduling window,
-// highest priority first.
+// Public ticker feed: active notices inside their scheduling window, latest first.
 const listActiveNotices = async ({ kind } = {}) => {
   const now = new Date();
   const filter = {
@@ -123,8 +113,8 @@ const listActiveNotices = async ({ kind } = {}) => {
   if (kind) filter.kind = kind;
 
   return Notice.find(filter)
-    .sort({ priority: -1, createdAt: -1 })
-    .select("title message linkUrl linkText kind priority startsAt endsAt createdAt");
+    .sort({ createdAt: -1 })
+    .select("message linkUrl kind startsAt endsAt createdAt");
 };
 
 module.exports = {

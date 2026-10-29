@@ -49,8 +49,8 @@ const getPublicHome = async () => {
       { $or: [{ endsAt: null }, { endsAt: { $gte: now } }] },
     ],
   })
-    .sort({ priority: -1, createdAt: -1 })
-    .select("title message linkUrl linkText kind priority createdAt")
+    .sort({ createdAt: -1 })
+    .select("message linkUrl kind createdAt")
     .lean();
 
   const [

@@ -18,7 +18,7 @@ const { publicNoticeQuerySchema } = require("../../dtos/noticeDto");
  *         description: Filter the ticker to plain notices or breaking items
  *     responses:
  *       200:
- *         description: Active notices within their scheduling window, highest priority first
+ *         description: Active notices within their scheduling window, newest first
  */
 
 router.get("/ticker", validate(publicNoticeQuerySchema, "query"), ticker);
