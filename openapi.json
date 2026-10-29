@@ -1151,13 +1151,6 @@
           },
           {
             "in": "query",
-            "name": "showInHeader",
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "in": "query",
             "name": "search",
             "schema": {
               "type": "string"
@@ -1221,9 +1214,6 @@
                     "type": "boolean"
                   },
                   "showInFooter": {
-                    "type": "boolean"
-                  },
-                  "showInHeader": {
                     "type": "boolean"
                   },
                   "sortOrder": {
@@ -1732,18 +1722,11 @@
     },
     "/public/static-pages": {
       "get": {
-        "summary": "List active static pages for header/footer menus (public)",
+        "summary": "List active static pages for footer menus (public)",
         "tags": [
           "Public Static Pages"
         ],
         "parameters": [
-          {
-            "in": "query",
-            "name": "showInHeader",
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "in": "query",
             "name": "showInFooter",
@@ -1945,7 +1928,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Active notices within their scheduling window, highest priority first"
+            "description": "Active notices within their scheduling window, newest first"
           }
         }
       }
@@ -2858,7 +2841,7 @@
                   "options": {
                     "type": "array",
                     "minItems": 2,
-                    "maxItems": 6,
+                    "maxItems": 3,
                     "items": {
                       "type": "object",
                       "required": [
@@ -3034,14 +3017,9 @@
               "schema": {
                 "type": "object",
                 "required": [
-                  "title",
                   "message"
                 ],
                 "properties": {
-                  "title": {
-                    "type": "string",
-                    "example": "Office closed on Diwali"
-                  },
                   "message": {
                     "type": "string",
                     "example": "All offices will remain closed on 20th Oct."
@@ -3049,14 +3027,6 @@
                   "linkUrl": {
                     "type": "string",
                     "example": "/news/diwali-holiday-order"
-                  },
-                  "linkText": {
-                    "type": "string",
-                    "example": "Read Order"
-                  },
-                  "priority": {
-                    "type": "number",
-                    "example": 10
                   },
                   "isActive": {
                     "type": "boolean",
@@ -3138,20 +3108,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "title": {
-                    "type": "string"
-                  },
                   "message": {
                     "type": "string"
                   },
                   "linkUrl": {
                     "type": "string"
-                  },
-                  "linkText": {
-                    "type": "string"
-                  },
-                  "priority": {
-                    "type": "number"
                   },
                   "isActive": {
                     "type": "boolean"

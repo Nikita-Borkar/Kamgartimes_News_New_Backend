@@ -5,7 +5,6 @@ const publicStaticPageParamSchema = z.object({
 });
 
 const publicStaticPageQuerySchema = z.object({
-  showInHeader: z.string().optional(),
   showInFooter: z.string().optional(),
 });
 

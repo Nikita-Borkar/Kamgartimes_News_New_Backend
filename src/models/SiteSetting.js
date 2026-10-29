@@ -7,7 +7,7 @@ const socialLinkSchema = new mongoose.Schema(
       required: true,
       trim: true,
       lowercase: true,
-      enum: ["youtube", "facebook", "instagram", "whatsapp", "twitter"],
+      maxlength: 50,
     },
     url: { type: String, required: true, trim: true },
     icon: { type: String, trim: true, default: "" },

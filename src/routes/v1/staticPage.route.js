@@ -33,9 +33,6 @@ const {
  *         name: showInFooter
  *         schema: { type: string }
  *       - in: query
- *         name: showInHeader
- *         schema: { type: string }
- *       - in: query
  *         name: search
  *         schema: { type: string }
  *       - in: query
@@ -93,8 +90,6 @@ const {
  *               isActive:
  *                 type: boolean
  *               showInFooter:
- *                 type: boolean
- *               showInHeader:
  *                 type: boolean
  *               sortOrder:
  *                 type: number

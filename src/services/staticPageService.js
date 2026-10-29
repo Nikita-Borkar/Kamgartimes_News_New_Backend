@@ -16,7 +16,6 @@ const slugify = (text) =>
 const listStaticPages = async ({
   isActive,
   showInFooter,
-  showInHeader,
   search,
   page = 1,
   limit = 20,
@@ -25,8 +24,6 @@ const listStaticPages = async ({
   if (isActive !== undefined) filter.isActive = isActive === "true";
   if (showInFooter !== undefined)
     filter.showInFooter = showInFooter === "true";
-  if (showInHeader !== undefined)
-    filter.showInHeader = showInHeader === "true";
   if (search) {
     filter.$or = [
       { title: { $regex: new RegExp(search, "i") } },
@@ -131,14 +128,13 @@ const deleteStaticPage = async (id) => {
 };
 
 // Public: navigation list of active pages (header/footer menus)
-const listPublicStaticPages = async ({ showInHeader, showInFooter } = {}) => {
+const listPublicStaticPages = async ({ showInFooter } = {}) => {
   const filter = { isActive: true };
-  if (showInHeader !== undefined) filter.showInHeader = showInHeader === "true";
   if (showInFooter !== undefined) filter.showInFooter = showInFooter === "true";
 
   const pages = await StaticPage.find(filter)
     .sort({ sortOrder: 1, title: 1 })
-    .select("title slug excerpt showInHeader showInFooter sortOrder")
+    .select("title slug excerpt showInFooter sortOrder")
     .lean();
 
   return { pages, total: pages.length };

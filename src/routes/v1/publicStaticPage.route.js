@@ -12,12 +12,9 @@ const {
  * @swagger
  * /public/static-pages:
  *   get:
- *     summary: List active static pages for header/footer menus (public)
+ *     summary: List active static pages for footer menus (public)
  *     tags: [Public Static Pages]
  *     parameters:
- *       - in: query
- *         name: showInHeader
- *         schema: { type: string }
  *       - in: query
  *         name: showInFooter
  *         schema: { type: string }

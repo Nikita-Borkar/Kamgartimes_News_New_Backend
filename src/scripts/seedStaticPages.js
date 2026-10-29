@@ -11,7 +11,6 @@ const pages = [
     excerpt: "Learn more about Kamgar Times and our mission.",
     isActive: true,
     showInFooter: true,
-    showInHeader: false,
     sortOrder: 1,
     seo: {
       metaTitle: "About Us - Kamgar Times",
@@ -26,7 +25,6 @@ const pages = [
     excerpt: "Contact Kamgar Times editorial team.",
     isActive: true,
     showInFooter: true,
-    showInHeader: false,
     sortOrder: 2,
     seo: {
       metaTitle: "Contact Us - Kamgar Times",
@@ -41,7 +39,6 @@ const pages = [
     excerpt: "Read our disclaimer.",
     isActive: true,
     showInFooter: true,
-    showInHeader: false,
     sortOrder: 3,
     seo: {
       metaTitle: "Disclaimer - Kamgar Times",
@@ -56,7 +53,6 @@ const pages = [
     excerpt: "Read our privacy policy.",
     isActive: true,
     showInFooter: true,
-    showInHeader: false,
     sortOrder: 4,
     seo: {
       metaTitle: "Privacy Policy - Kamgar Times",
@@ -71,7 +67,6 @@ const pages = [
     excerpt: "Donate to support Kamgar Times.",
     isActive: true,
     showInFooter: true,
-    showInHeader: false,
     sortOrder: 5,
     seo: {
       metaTitle: "Donate Us - Kamgar Times",
@@ -86,7 +81,6 @@ const pages = [
     excerpt: "Advertising and payment options.",
     isActive: true,
     showInFooter: true,
-    showInHeader: false,
     sortOrder: 6,
     seo: {
       metaTitle: "Pay for Ads - Kamgar Times",

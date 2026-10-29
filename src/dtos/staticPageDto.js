@@ -22,7 +22,6 @@ const createStaticPageSchema = z.object({
   excerpt: z.string().max(500).optional().default(""),
   isActive: z.boolean().optional().default(true),
   showInFooter: z.boolean().optional().default(false),
-  showInHeader: z.boolean().optional().default(false),
   sortOrder: z.number().optional().default(0),
   seo: seoSchema.optional(),
 });
@@ -34,7 +33,6 @@ const updateStaticPageSchema = z.object({
   excerpt: z.string().max(500).optional(),
   isActive: z.boolean().optional(),
   showInFooter: z.boolean().optional(),
-  showInHeader: z.boolean().optional(),
   sortOrder: z.number().optional(),
   seo: seoSchema.optional(),
 });
@@ -42,7 +40,6 @@ const updateStaticPageSchema = z.object({
 const staticPageQuerySchema = z.object({
   isActive: z.string().optional(),
   showInFooter: z.string().optional(),
-  showInHeader: z.string().optional(),
   search: z.string().optional(),
   page: z.string().optional(),
   limit: z.string().optional(),

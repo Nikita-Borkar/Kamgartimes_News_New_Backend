@@ -1,28 +1,23 @@
 const z = require("zod");
 
 const socialLinkSchema = z.object({
-  platform: z.enum([
-    "youtube",
-    "facebook",
-    "instagram",
-    "whatsapp",
-    "twitter",
-  ]),
+  platform: z.string().trim().min(1).max(50).transform((platform) => platform.toLowerCase()),
   url: z.string().nonempty().url("Invalid URL"),
   icon: z.string().optional().default(""),
 });
 
 const updateSiteSettingSchema = z.object({
   siteName: z.string().nonempty().max(100).optional(),
-  tagline: z.string().max(200).optional().default(""),
+  tagline: z.string().max(200).optional(),
   contactEmail: z
     .string()
+    .trim()
     .email("Invalid email")
+    .or(z.literal(""))
     .optional()
-    .nullable()
-    .default(""),
-  contactPhone: z.string().optional().nullable().default(""),
-  address: z.string().optional().nullable().default(""),
+    .nullable(),
+  contactPhone: z.string().optional().nullable(),
+  address: z.string().optional().nullable(),
   isMaintenanceMode: z.boolean().optional(),
   socialLinks: z.array(socialLinkSchema).optional(),
 });

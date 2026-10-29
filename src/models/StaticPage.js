@@ -14,7 +14,6 @@ const staticPageSchema = new mongoose.Schema(
     excerpt: { type: String, trim: true, maxlength: 500, default: "" },
     isActive: { type: Boolean, default: true },
     showInFooter: { type: Boolean, default: false },
-    showInHeader: { type: Boolean, default: false },
     sortOrder: { type: Number, default: 0 },
     seo: {
       metaTitle: { type: String, default: "", maxlength: 250 },
