@@ -538,7 +538,7 @@ const buildAlerts = ({ articles, submissions, ads, polls, library }) => {
   return alerts;
 };
 
-const getDashboardOverview = async ({ range = "30d" } = {}) => {
+const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) => {
   const days = RANGE_DAYS[range] || RANGE_DAYS["30d"];
   const now = new Date();
   const todayStart = istDayStart(now);
@@ -573,7 +573,7 @@ const getDashboardOverview = async ({ range = "30d" } = {}) => {
     getSeries({ rangeFrom, rangeTo, keys }),
   ]);
 
-  return {
+  const result = {
     meta: {
       generatedAt: now.toISOString(),
       range: {
@@ -625,6 +625,65 @@ const getDashboardOverview = async ({ range = "30d" } = {}) => {
       polls,
       library,
     }),
+  };
+
+  const canRead = (permission) => permissions.includes(permission);
+  const summary = {};
+  if (canRead("article:read")) {
+    summary.articles = result.summary.articles;
+    summary.engagement = canRead("comment:moderate")
+      ? result.summary.engagement
+      : {
+          views: result.summary.engagement.views,
+          likes: result.summary.engagement.likes,
+        };
+  }
+  if (canRead("liveNews:read")) summary.liveNews = result.summary.liveNews;
+  if (canRead("notice:read")) summary.notices = result.summary.notices;
+  if (canRead("ad:read")) summary.ads = result.summary.ads;
+  if (canRead("poll:read")) summary.polls = result.summary.polls;
+  if (canRead("qotd:read")) summary.qotd = result.summary.qotd;
+  if (canRead("submission:read")) summary.submissions = result.summary.submissions;
+  if (canRead("user:read")) summary.users = result.summary.users;
+  if (canRead("role:read")) summary.roles = result.summary.roles;
+
+  const visibleLibrary = {};
+  if (canRead("media:read")) {
+    visibleLibrary.images = result.summary.library.images;
+    visibleLibrary.videos = result.summary.library.videos;
+  }
+  if (canRead("gallery:read")) visibleLibrary.galleries = result.summary.library.galleries;
+  if (canRead("epaper:read")) visibleLibrary.epaper = result.summary.library.epaper;
+  if (canRead("category:read")) visibleLibrary.categories = result.summary.library.categories;
+  if (canRead("city:read")) visibleLibrary.cities = result.summary.library.cities;
+  if (canRead("staticPage:read")) visibleLibrary.staticPages = result.summary.library.staticPages;
+  if (Object.keys(visibleLibrary).length) summary.library = visibleLibrary;
+
+  const visibleSeries = {};
+  if (canRead("article:read")) {
+    visibleSeries.articlesPublishedByDay = result.series.articlesPublishedByDay;
+  }
+  if (canRead("ad:read")) visibleSeries.adClicksByDay = result.series.adClicksByDay;
+  if (canRead("poll:read")) visibleSeries.pollVotesByDay = result.series.pollVotesByDay;
+
+  const alertPermission = {
+    DRAFTS_PENDING: "article:read",
+    NEW_SUBMISSIONS: "submission:read",
+    ADS_ENDING_SOON: "ad:read",
+    NO_ACTIVE_POLL: "poll:read",
+    NO_ACTIVE_EPAPER: "epaper:read",
+  };
+
+  return {
+    ...result,
+    summary,
+    series: visibleSeries,
+    editorialQueue: canRead("article:read") ? result.editorialQueue : undefined,
+    recentArticles: canRead("article:read") ? result.recentArticles : undefined,
+    topArticles: canRead("article:read") ? result.topArticles : undefined,
+    ads: canRead("ad:read") ? result.ads : undefined,
+    submissions: canRead("submission:read") ? result.submissions : undefined,
+    alerts: result.alerts.filter((alert) => canRead(alertPermission[alert.code])),
   };
 };
 

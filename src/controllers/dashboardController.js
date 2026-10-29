@@ -3,7 +3,10 @@ const successResponse = require("../errors/responses/successResponse");
 
 const overview = async (req, res, next) => {
   try {
-    const result = await getDashboardOverview(req.validatedQuery || {});
+    const result = await getDashboardOverview({
+      ...(req.validatedQuery || {}),
+      permissions: req.permissions || [],
+    });
     return res
       .status(200)
       .json(new successResponse(200, "Dashboard overview fetched successfully", result));
