@@ -7,6 +7,7 @@ const {
   updateArticleStatus,
   deleteArticle,
   moderateComment,
+  listCommentsForModeration,
   deleteComment,
   uploadArticlePdf: uploadPdfAsset,
 } = require("../services/articleService");
@@ -115,6 +116,17 @@ const moderateCommentStatus = async (req, res, next) => {
   }
 };
 
+const listForModeration = async (req, res, next) => {
+  try {
+    const result = await listCommentsForModeration(req.validatedQuery);
+    return res
+      .status(200)
+      .json(new successResponse(200, "Comments fetched successfully", result));
+  } catch (err) {
+    next(err);
+  }
+};
+
 const removeComment = async (req, res, next) => {
   try {
     const result = await deleteComment(req.params.commentId);
@@ -136,5 +148,6 @@ module.exports = {
   updateStatus,
   remove,
   moderateCommentStatus,
+  listForModeration,
   removeComment,
 };

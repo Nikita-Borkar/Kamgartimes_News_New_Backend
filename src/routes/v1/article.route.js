@@ -11,6 +11,7 @@ const {
   updateStatus,
   remove,
   moderateCommentStatus,
+  listForModeration,
   removeComment,
 } = require("../../controllers/articleController");
 const validate = require("../../middlewares/validate");
@@ -23,6 +24,7 @@ const {
   articleStatusSchema,
   articleFlagsSchema,
   commentStatusSchema,
+  commentModerationQuerySchema,
   articleQuerySchema,
 } = require("../../dtos/articleDto");
 
@@ -222,6 +224,14 @@ const {
 
 // Comment moderation is registered before /:id routes to avoid any
 // ambiguity with parametric segments.
+router.get(
+  "/comments",
+  authenticate,
+  loadPermissions,
+  requirePermission("comment:moderate"),
+  validate(commentModerationQuerySchema, "query"),
+  listForModeration
+);
 router.patch(
   "/comments/:commentId",
   authenticate,

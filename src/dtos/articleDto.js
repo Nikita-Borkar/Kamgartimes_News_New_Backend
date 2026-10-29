@@ -76,6 +76,13 @@ const commentStatusSchema = z.object({
   status: z.enum(["APPROVED", "HIDDEN"]),
 });
 
+const commentModerationQuerySchema = z.object({
+  status: z.enum(["APPROVED", "HIDDEN"]).optional(),
+  search: z.string().optional(),
+  page: z.string().optional(),
+  limit: z.string().optional(),
+});
+
 const articleQuerySchema = z.object({
   status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
   category: objectIdString.optional(),
@@ -97,5 +104,6 @@ module.exports = {
   articleStatusSchema,
   articleFlagsSchema,
   commentStatusSchema,
+  commentModerationQuerySchema,
   articleQuerySchema,
 };

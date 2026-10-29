@@ -361,6 +361,35 @@ const moderateComment = async (commentId, status) => {
   return { id: comment._id, status: comment.status };
 };
 
+const listCommentsForModeration = async ({ status, search, page = 1, limit = 20 } = {}) => {
+  const pageNum = Math.max(parseInt(page, 10) || 1, 1);
+  const limitNum = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+  const filter = {};
+  if (status) filter.status = status;
+  if (search?.trim()) {
+    const rx = { $regex: escapeRegex(search.trim()), $options: "i" };
+    const matchingArticles = await Article.find({ title: rx }).distinct("_id");
+    const matchingUsers = await User.find({ name: rx }).distinct("_id");
+    filter.$or = [
+      { body: rx },
+      { article: { $in: matchingArticles } },
+      { user: { $in: matchingUsers } },
+    ];
+  }
+
+  const [comments, total] = await Promise.all([
+    Comment.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((pageNum - 1) * limitNum)
+      .limit(limitNum)
+      .populate("user", "name email")
+      .populate("article", "title slug"),
+    Comment.countDocuments(filter),
+  ]);
+
+  return { comments, total, page: pageNum, limit: limitNum };
+};
+
 const deleteComment = async (commentId) => {
   assertValidId(commentId, "comment");
   const comment = await Comment.findById(commentId);
@@ -394,6 +423,7 @@ module.exports = {
   updateArticleStatus,
   deleteArticle,
   moderateComment,
+  listCommentsForModeration,
   deleteComment,
 };
 
