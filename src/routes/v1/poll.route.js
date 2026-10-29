@@ -10,7 +10,6 @@ const {
 } = require("../../controllers/pollController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
 const {
   createPollSchema,
   updatePollSchema,
@@ -116,39 +115,29 @@ const {
 router.get(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("poll:read"),
   validate(pollQuerySchema, "query"),
   list,
 );
 router.get(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("poll:read"),
   getById,
 );
 router.post(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("poll:create"),
   validate(createPollSchema),
   create,
 );
 router.put(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("poll:update"),
   validate(updatePollSchema),
   update,
 );
 router.delete(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("poll:delete"),
   remove,
 );
 

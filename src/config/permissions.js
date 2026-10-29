@@ -64,30 +64,6 @@ const PERMISSIONS = {
   MEDIA_UPDATE: "media:update",
   MEDIA_DELETE: "media:delete",
 
-  // Cities (hyperlocal sections)
-  CITY_READ: "city:read",
-  CITY_CREATE: "city:create",
-  CITY_UPDATE: "city:update",
-  CITY_DELETE: "city:delete",
-
-  // Photo galleries
-  GALLERY_READ: "gallery:read",
-  GALLERY_CREATE: "gallery:create",
-  GALLERY_UPDATE: "gallery:update",
-  GALLERY_DELETE: "gallery:delete",
-
-  // E-paper editions
-  EPAPER_READ: "epaper:read",
-  EPAPER_CREATE: "epaper:create",
-  EPAPER_UPDATE: "epaper:update",
-  EPAPER_DELETE: "epaper:delete",
-
-  // Reader polls
-  POLL_READ: "poll:read",
-  POLL_CREATE: "poll:create",
-  POLL_UPDATE: "poll:update",
-  POLL_DELETE: "poll:delete",
-
   // Public submissions inbox (tips, reporter applications, ad leads, contact)
   SUBMISSION_READ: "submission:read",
   SUBMISSION_UPDATE: "submission:update",
@@ -209,46 +185,6 @@ const PERMISSION_GROUPS = [
       PERMISSIONS.QOTD_CREATE,
       PERMISSIONS.QOTD_UPDATE,
       PERMISSIONS.QOTD_DELETE,
-    ],
-  },
-  {
-    resource: "city",
-    label: "Cities",
-    permissions: [
-      PERMISSIONS.CITY_READ,
-      PERMISSIONS.CITY_CREATE,
-      PERMISSIONS.CITY_UPDATE,
-      PERMISSIONS.CITY_DELETE,
-    ],
-  },
-  {
-    resource: "gallery",
-    label: "Galleries",
-    permissions: [
-      PERMISSIONS.GALLERY_READ,
-      PERMISSIONS.GALLERY_CREATE,
-      PERMISSIONS.GALLERY_UPDATE,
-      PERMISSIONS.GALLERY_DELETE,
-    ],
-  },
-  {
-    resource: "epaper",
-    label: "E-paper",
-    permissions: [
-      PERMISSIONS.EPAPER_READ,
-      PERMISSIONS.EPAPER_CREATE,
-      PERMISSIONS.EPAPER_UPDATE,
-      PERMISSIONS.EPAPER_DELETE,
-    ],
-  },
-  {
-    resource: "poll",
-    label: "Polls",
-    permissions: [
-      PERMISSIONS.POLL_READ,
-      PERMISSIONS.POLL_CREATE,
-      PERMISSIONS.POLL_UPDATE,
-      PERMISSIONS.POLL_DELETE,
     ],
   },
   {

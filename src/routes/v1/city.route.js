@@ -10,7 +10,6 @@ const {
 } = require("../../controllers/cityController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
 const { createCitySchema, updateCitySchema, cityQuerySchema } = require("../../dtos/cityDto");
 
 /**
@@ -103,39 +102,29 @@ const { createCitySchema, updateCitySchema, cityQuerySchema } = require("../../d
 router.get(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("city:read"),
   validate(cityQuerySchema, "query"),
   list,
 );
 router.get(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("city:read"),
   getById,
 );
 router.post(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("city:create"),
   validate(createCitySchema),
   create,
 );
 router.put(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("city:update"),
   validate(updateCitySchema),
   update,
 );
 router.delete(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("city:delete"),
   remove,
 );
 

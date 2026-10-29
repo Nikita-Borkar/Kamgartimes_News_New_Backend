@@ -10,7 +10,6 @@ const {
 } = require("../../controllers/galleryController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
 const {
   createGallerySchema,
   updateGallerySchema,
@@ -122,39 +121,29 @@ const {
 router.get(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("gallery:read"),
   validate(galleryQuerySchema, "query"),
   list,
 );
 router.get(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("gallery:read"),
   getById,
 );
 router.post(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("gallery:create"),
   validate(createGallerySchema),
   create,
 );
 router.put(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("gallery:update"),
   validate(updateGallerySchema),
   update,
 );
 router.delete(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("gallery:delete"),
   remove,
 );
 

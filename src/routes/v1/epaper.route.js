@@ -10,7 +10,6 @@ const {
 } = require("../../controllers/epaperController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
 const {
   createEpaperSchema,
   updateEpaperSchema,
@@ -114,39 +113,29 @@ const {
 router.get(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("epaper:read"),
   validate(epaperQuerySchema, "query"),
   list,
 );
 router.get(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("epaper:read"),
   getById,
 );
 router.post(
   "/",
   authenticate,
-  loadPermissions,
-  requirePermission("epaper:create"),
   validate(createEpaperSchema),
   create,
 );
 router.put(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("epaper:update"),
   validate(updateEpaperSchema),
   update,
 );
 router.delete(
   "/:id",
   authenticate,
-  loadPermissions,
-  requirePermission("epaper:delete"),
   remove,
 );
 

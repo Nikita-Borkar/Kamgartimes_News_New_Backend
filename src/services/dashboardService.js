@@ -641,7 +641,7 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
   if (canRead("liveNews:read")) summary.liveNews = result.summary.liveNews;
   if (canRead("notice:read")) summary.notices = result.summary.notices;
   if (canRead("ad:read")) summary.ads = result.summary.ads;
-  if (canRead("poll:read")) summary.polls = result.summary.polls;
+  summary.polls = result.summary.polls;
   if (canRead("qotd:read")) summary.qotd = result.summary.qotd;
   if (canRead("submission:read")) summary.submissions = result.summary.submissions;
   if (canRead("user:read")) summary.users = result.summary.users;
@@ -652,10 +652,10 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
     visibleLibrary.images = result.summary.library.images;
     visibleLibrary.videos = result.summary.library.videos;
   }
-  if (canRead("gallery:read")) visibleLibrary.galleries = result.summary.library.galleries;
-  if (canRead("epaper:read")) visibleLibrary.epaper = result.summary.library.epaper;
+  visibleLibrary.galleries = result.summary.library.galleries;
+  visibleLibrary.epaper = result.summary.library.epaper;
   if (canRead("category:read")) visibleLibrary.categories = result.summary.library.categories;
-  if (canRead("city:read")) visibleLibrary.cities = result.summary.library.cities;
+  visibleLibrary.cities = result.summary.library.cities;
   if (canRead("staticPage:read")) visibleLibrary.staticPages = result.summary.library.staticPages;
   if (Object.keys(visibleLibrary).length) summary.library = visibleLibrary;
 
@@ -664,14 +664,14 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
     visibleSeries.articlesPublishedByDay = result.series.articlesPublishedByDay;
   }
   if (canRead("ad:read")) visibleSeries.adClicksByDay = result.series.adClicksByDay;
-  if (canRead("poll:read")) visibleSeries.pollVotesByDay = result.series.pollVotesByDay;
+  visibleSeries.pollVotesByDay = result.series.pollVotesByDay;
 
   const alertPermission = {
     DRAFTS_PENDING: "article:read",
     NEW_SUBMISSIONS: "submission:read",
     ADS_ENDING_SOON: "ad:read",
-    NO_ACTIVE_POLL: "poll:read",
-    NO_ACTIVE_EPAPER: "epaper:read",
+    NO_ACTIVE_POLL: "dashboard:read",
+    NO_ACTIVE_EPAPER: "dashboard:read",
   };
 
   return {
