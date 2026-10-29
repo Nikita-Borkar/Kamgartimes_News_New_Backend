@@ -8,6 +8,7 @@ const {
   deleteArticle,
   moderateComment,
   deleteComment,
+  uploadArticlePdf: uploadPdfAsset,
 } = require("../services/articleService");
 const successResponse = require("../errors/responses/successResponse");
 
@@ -28,6 +29,17 @@ const getById = async (req, res, next) => {
     return res
       .status(200)
       .json(new successResponse(200, "Article fetched successfully", article));
+  } catch (err) {
+    next(err);
+  }
+};
+
+const uploadPdf = async (req, res, next) => {
+  try {
+    const asset = await uploadPdfAsset(req.file);
+    return res
+      .status(201)
+      .json(new successResponse(201, "Article PDF uploaded successfully", asset));
   } catch (err) {
     next(err);
   }
@@ -117,6 +129,7 @@ const removeComment = async (req, res, next) => {
 module.exports = {
   list,
   getById,
+  uploadPdf,
   create,
   update,
   updateFlags,

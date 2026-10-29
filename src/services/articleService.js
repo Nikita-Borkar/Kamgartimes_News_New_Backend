@@ -8,8 +8,34 @@ const User = require("../models/User");
 const slugify = require("../utils/slugify");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
+const { uploadBuffer } = require("../config/cloudinary");
+const path = require("path");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const uploadArticlePdf = async (file) => {
+  if (!file?.buffer) throw new BadRequestError("PDF file is required");
+  if (file.buffer.subarray(0, 5).toString("ascii") !== "%PDF-") {
+    throw new BadRequestError("The uploaded file is not a valid PDF");
+  }
+
+  const baseName = path
+    .basename(file.originalname, path.extname(file.originalname))
+    .replace(/[^a-zA-Z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "article-document";
+
+  try {
+    const uploaded = await uploadBuffer(file.buffer, {
+      folder: "kamgartimes/articles/pdfs",
+      resource_type: "image",
+      type: "upload",
+      public_id: `${Date.now()}-${baseName}`,
+    });
+    return { url: uploaded.secure_url, filename: file.originalname, bytes: uploaded.bytes };
+  } catch (err) {
+    throw new BadRequestError(`PDF upload failed: ${err.message}`);
+  }
+};
 
 const assertValidId = (id, label) => {
   if (!mongoose.isValidObjectId(id)) throw new BadRequestError(`Invalid ${label} ID`);
@@ -359,6 +385,7 @@ const deleteComment = async (commentId) => {
 };
 
 module.exports = {
+  uploadArticlePdf,
   listArticles,
   getArticleById,
   createArticle,

@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   list,
   getById,
+  uploadPdf,
   create,
   update,
   updateFlags,
@@ -14,7 +15,8 @@ const {
 } = require("../../controllers/articleController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
+const uploadArticlePdf = require("../../middlewares/uploadArticlePdf");
+const { loadPermissions, requirePermission, requireAnyPermission } = require("../../middlewares/permissionMiddleware");
 const {
   createArticleSchema,
   updateArticleSchema,
@@ -243,6 +245,14 @@ router.get(
   requirePermission("article:read"),
   validate(articleQuerySchema, "query"),
   list
+);
+router.post(
+  "/assets/pdf",
+  authenticate,
+  loadPermissions,
+  requireAnyPermission("article:create", "article:update"),
+  uploadArticlePdf,
+  uploadPdf
 );
 router.get(
   "/:id",
