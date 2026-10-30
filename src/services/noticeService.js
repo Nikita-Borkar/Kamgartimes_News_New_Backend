@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Notice = require("../models/Notice");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
+const { notifyPushSubscribers } = require("./pushNotificationService");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -14,6 +15,20 @@ const assertValidWindow = (startsAt, endsAt) => {
     throw new BadRequestError("endsAt must be after startsAt");
   }
 };
+
+const isNoticeLive = (notice, now = new Date()) =>
+  Boolean(
+    notice.isActive &&
+      (!notice.startsAt || new Date(notice.startsAt) <= now) &&
+      (!notice.endsAt || new Date(notice.endsAt) >= now),
+  );
+
+const notifyNotice = (notice) =>
+  notifyPushSubscribers({
+    title: notice.kind === "BREAKING" ? "Breaking News" : "Kamgar Times Notice",
+    body: notice.message,
+    url: notice.linkUrl || "/",
+  });
 
 const listNotices = async ({ isActive, kind, search, page = 1, limit = 20 } = {}) => {
   const filter = {};
@@ -65,6 +80,8 @@ const createNotice = async (body, userId) => {
     updatedBy: null,
   });
 
+  if (isNoticeLive(notice)) notifyNotice(notice);
+
   return notice;
 };
 
@@ -72,6 +89,7 @@ const updateNotice = async (id, body, userId) => {
   assertValidId(id);
   const notice = await Notice.findById(id);
   if (!notice) throw new NotFoundError("Notice not found");
+  const wasLive = isNoticeLive(notice);
 
   const { message, linkUrl, kind, isActive, startsAt, endsAt } = body;
 
@@ -88,6 +106,7 @@ const updateNotice = async (id, body, userId) => {
   notice.updatedBy = userId;
 
   await notice.save();
+  if (!wasLive && isNoticeLive(notice)) notifyNotice(notice);
   return notice;
 };
 

@@ -4,6 +4,7 @@ const Category = require("../models/Category");
 const slugify = require("../utils/slugify");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
+const { notifyPushSubscribers } = require("./pushNotificationService");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -109,7 +110,7 @@ const createGallery = async (body, userId) => {
 
   await assertCategoryExists(body.category);
 
-  return Gallery.create({
+  const gallery = await Gallery.create({
     ...body,
     slug: finalSlug,
     category: body.category || null,
@@ -118,12 +119,21 @@ const createGallery = async (body, userId) => {
     createdBy: userId,
     updatedBy: null,
   });
+  if (gallery.status === "PUBLISHED") {
+    notifyPushSubscribers({
+      title: `New photo gallery: ${gallery.title}`,
+      body: gallery.description || `${gallery.images.length} photos are ready to view.`,
+      url: `/gallery/${gallery.slug}`,
+    });
+  }
+  return gallery;
 };
 
 const updateGallery = async (id, body, userId) => {
   assertValidId(id);
   const gallery = await Gallery.findById(id);
   if (!gallery) throw new NotFoundError("Gallery not found");
+  const wasPublished = gallery.status === "PUBLISHED";
 
   if (body.category !== undefined) {
     await assertCategoryExists(body.category);
@@ -155,6 +165,13 @@ const updateGallery = async (id, body, userId) => {
 
   gallery.updatedBy = userId;
   await gallery.save();
+  if (!wasPublished && gallery.status === "PUBLISHED") {
+    notifyPushSubscribers({
+      title: `New photo gallery: ${gallery.title}`,
+      body: gallery.description || `${gallery.images.length} photos are ready to view.`,
+      url: `/gallery/${gallery.slug}`,
+    });
+  }
   return gallery;
 };
 

@@ -3,6 +3,7 @@ const Images = require("../models/ImageMedia");
 const { uploadBuffer, destroyAsset } = require("../config/cloudinary");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
+const { notifyPushSubscribers } = require("./pushNotificationService");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -51,7 +52,7 @@ const createImage = async (file, meta, userId) => {
   }
 
   try {
-    return await Images.create({
+    const image = await Images.create({
       title: meta.title,
       description: meta.description || "",
       altText: meta.altText || "",
@@ -65,6 +66,14 @@ const createImage = async (file, meta, userId) => {
       bytes: uploaded.bytes || 0,
       createdBy: userId,
     });
+    if (image.status === "PUBLISHED") {
+      notifyPushSubscribers({
+        title: `New photo: ${image.title}`,
+        body: image.description || "See the latest photo from Kamgar Times.",
+        url: "/gallery",
+      });
+    }
+    return image;
   } catch (err) {
     // Don't leave an orphaned Cloudinary asset if the DB write fails
     await destroyAsset(uploaded.public_id, "image").catch(() => {});
@@ -76,6 +85,7 @@ const updateImage = async (id, meta) => {
   assertValidId(id);
   const image = await Images.findById(id);
   if (!image) throw new NotFoundError("Image not found");
+  const wasPublished = image.status === "PUBLISHED";
 
   if (meta.title !== undefined) image.title = meta.title;
   if (meta.description !== undefined) image.description = meta.description;
@@ -83,6 +93,13 @@ const updateImage = async (id, meta) => {
   if (meta.status !== undefined) image.status = meta.status;
 
   await image.save();
+  if (!wasPublished && image.status === "PUBLISHED") {
+    notifyPushSubscribers({
+      title: `New photo: ${image.title}`,
+      body: image.description || "See the latest photo from Kamgar Times.",
+      url: "/gallery",
+    });
+  }
   return image;
 };
 

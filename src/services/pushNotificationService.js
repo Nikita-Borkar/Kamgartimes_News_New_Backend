@@ -29,17 +29,18 @@ const removeSubscription = async (endpoint) => {
   await PushSubscription.deleteOne({ endpoint });
 };
 
-const sendArticleNotification = async (article) => {
+const sendPushNotification = async ({ title, body, url = "/" }) => {
   if (!configureWebPush()) {
     console.warn("Push notifications skipped: VAPID environment variables are missing.");
     return;
   }
 
   const subscriptions = await PushSubscription.find().lean();
+  const siteUrl = (process.env.WEBSITE_URL || "").replace(/\/$/, "");
   const payload = JSON.stringify({
-    title: article.title,
-    body: article.summary || "कामगार टाइम्स पर नई खबर पढ़ें।",
-    url: `${(process.env.WEBSITE_URL || "").replace(/\/$/, "")}/article/${article.slug}`,
+    title: title || "कामगार टाइम्स",
+    body: body || "नई जानकारी पढ़ने के लिए टैप करें।",
+    url: /^https?:\/\//i.test(url) ? url : `${siteUrl}${url.startsWith("/") ? url : `/${url}`}`,
     icon: "/img/logo.png",
   });
 
@@ -58,4 +59,16 @@ const sendArticleNotification = async (article) => {
   );
 };
 
-module.exports = { getVapidPublicKey, isValidVapidPublicKey, saveSubscription, removeSubscription, sendArticleNotification };
+const notifyPushSubscribers = (notification) =>
+  sendPushNotification(notification).catch((error) =>
+    console.error("Could not send push notifications:", error.message),
+  );
+
+module.exports = {
+  getVapidPublicKey,
+  isValidVapidPublicKey,
+  saveSubscription,
+  removeSubscription,
+  sendPushNotification,
+  notifyPushSubscribers,
+};

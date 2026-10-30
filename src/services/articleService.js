@@ -10,7 +10,7 @@ const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
 const { uploadBuffer } = require("../config/cloudinary");
 const path = require("path");
-const { sendArticleNotification } = require("./pushNotificationService");
+const { notifyPushSubscribers } = require("./pushNotificationService");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -331,9 +331,11 @@ const updateArticleStatus = async (id, status) => {
   await article.save();
   if (shouldNotify) {
     // Do not turn a successful publish into an API failure if push delivery has a problem.
-    sendArticleNotification(article).catch((error) =>
-      console.error("Could not send article push notifications:", error.message),
-    );
+    notifyPushSubscribers({
+      title: article.title,
+      body: article.summary || "कामगार टाइम्स पर नई खबर पढ़ें।",
+      url: `/article/${article.slug}`,
+    });
   }
   return { id: article._id, status: article.status, publishedAt: article.publishedAt };
 };

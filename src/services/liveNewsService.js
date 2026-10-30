@@ -3,12 +3,23 @@ const LiveNews = require("../models/LiveNews");
 const Category = require("../models/Category");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
+const { notifyPushSubscribers } = require("./pushNotificationService");
 
 const assertValidId = (id) => {
   if (!mongoose.isValidObjectId(id)) throw new BadRequestError("Invalid live news ID");
 };
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const isLiveNow = (item, now = new Date()) =>
+  Boolean(item.isActive && (!item.publishedAt || new Date(item.publishedAt) <= now));
+
+const notifyLiveNews = (item) =>
+  notifyPushSubscribers({
+    title: "Live News Update",
+    body: item.heading,
+    url: item.linkUrl || "/",
+  });
 
 const listLiveNews = async ({
   isActive,
@@ -75,6 +86,8 @@ const createLiveNews = async (body, userId) => {
     updatedBy: null,
   });
 
+  if (isLiveNow(item)) notifyLiveNews(item);
+
   return item;
 };
 
@@ -82,6 +95,7 @@ const updateLiveNews = async (id, body, userId) => {
   assertValidId(id);
   const item = await LiveNews.findById(id);
   if (!item) throw new NotFoundError("Live news not found");
+  const wasLive = isLiveNow(item);
 
   const {
     heading,
@@ -107,6 +121,7 @@ const updateLiveNews = async (id, body, userId) => {
   item.updatedBy = userId;
 
   await item.save();
+  if (!wasLive && isLiveNow(item)) notifyLiveNews(item);
   return item;
 };
 

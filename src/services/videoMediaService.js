@@ -3,6 +3,7 @@ const Videos = require("../models/VideoMedia");
 const Category = require("../models/Category");
 const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
+const { notifyPushSubscribers } = require("./pushNotificationService");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -79,7 +80,7 @@ const createVideo = async (meta, userId) => {
   const category = await Category.findById(meta.category);
   if (!category) throw new BadRequestError("Category not found");
 
-  return Videos.create({
+  const video = await Videos.create({
     title: meta.title,
     altText: meta.altText || "",
     youtubeUrl: meta.youtubeUrl.trim(),
@@ -90,12 +91,21 @@ const createVideo = async (meta, userId) => {
     user: userId,
     status: meta.status || "DRAFT",
   });
+  if (video.status === "PUBLISHED") {
+    notifyPushSubscribers({
+      title: `New video: ${video.title}`,
+      body: `A new ${video.videoType === "SHORT" ? "short" : "video"} is available on Kamgar Times.`,
+      url: `/video/${video._id}`,
+    });
+  }
+  return video;
 };
 
 const updateVideo = async (id, meta) => {
   assertValidId(id);
   const video = await Videos.findById(id);
   if (!video) throw new NotFoundError("Video not found");
+  const wasPublished = video.status === "PUBLISHED";
 
   if (meta.youtubeUrl !== undefined) {
     const videoId = extractYoutubeId(meta.youtubeUrl);
@@ -117,6 +127,13 @@ const updateVideo = async (id, meta) => {
   if (meta.status !== undefined) video.status = meta.status;
 
   await video.save();
+  if (!wasPublished && video.status === "PUBLISHED") {
+    notifyPushSubscribers({
+      title: `New video: ${video.title}`,
+      body: `A new ${video.videoType === "SHORT" ? "short" : "video"} is available on Kamgar Times.`,
+      url: `/video/${video._id}`,
+    });
+  }
   return video;
 };
 
