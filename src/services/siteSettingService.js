@@ -31,13 +31,9 @@ const updateSiteSetting = async (body, file, userId) => {
     });
   }
 
-  // Handle logo upload via Cloudinary
+  // New uploads are theme-specific. Requests without logoVariant are treated
+  // as light-logo uploads for compatibility with existing Admin clients.
   if (file && file.buffer) {
-    // Delete old logo from Cloudinary if it exists
-    if (setting.logoPublicId) {
-      await destroyAsset(setting.logoPublicId, "image").catch(() => {});
-    }
-
     let uploaded;
     try {
       uploaded = await uploadBuffer(file.buffer, {
@@ -47,8 +43,26 @@ const updateSiteSetting = async (body, file, userId) => {
       throw new BadRequestError(`Cloudinary upload failed: ${err.message}`);
     }
 
-    setting.logoUrl = uploaded.secure_url;
-    setting.logoPublicId = uploaded.public_id;
+    const variant = body.logoVariant === "dark" ? "dark" : "light";
+    const previousPublicId =
+      variant === "dark"
+        ? setting.logoDarkPublicId
+        : setting.logoLightPublicId || setting.logoPublicId;
+
+    if (variant === "dark") {
+      setting.logoDarkUrl = uploaded.secure_url;
+      setting.logoDarkPublicId = uploaded.public_id;
+    } else {
+      setting.logoLightUrl = uploaded.secure_url;
+      setting.logoLightPublicId = uploaded.public_id;
+      // Keep legacy clients and the favicon on the light-theme asset.
+      setting.logoUrl = uploaded.secure_url;
+      setting.logoPublicId = uploaded.public_id;
+    }
+
+    if (previousPublicId && previousPublicId !== uploaded.public_id) {
+      await destroyAsset(previousPublicId, "image").catch(() => {});
+    }
   }
 
   // Update scalar fields

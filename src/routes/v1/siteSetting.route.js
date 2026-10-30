@@ -51,10 +51,14 @@ const { updateSiteSettingSchema } = require("../../dtos/siteSettingDto");
  *               socialLinks:
  *                 type: string
  *                 description: JSON string of social links array
+ *               logoVariant:
+ *                 type: string
+ *                 enum: [light, dark]
+ *                 description: Theme variant for the uploaded logo image
  *               image:
  *                 type: string
  *                 format: binary
- *                 description: Logo image file
+ *                 description: Light or dark theme logo image file
  *     responses:
  *       200:
  *         description: Site setting updated

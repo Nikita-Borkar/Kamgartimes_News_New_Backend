@@ -7,6 +7,7 @@ const socialLinkSchema = z.object({
 });
 
 const updateSiteSettingSchema = z.object({
+  logoVariant: z.enum(["light", "dark"]).optional(),
   siteName: z.string().nonempty().max(100).optional(),
   tagline: z.string().max(200).optional(),
   contactEmail: z
