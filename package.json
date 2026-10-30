@@ -7,6 +7,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "seed": "node src/scripts/seedRoles.js",
+    "seed:categories": "node src/scripts/seedDefaultCategories.js",
     "seed:ads": "node src/scripts/seedAdSlots.js",
     "gen:swagger": "node src/scripts/generate-swagger.js"
   },
