@@ -1,12 +1,21 @@
 const successResponse = require("../errors/responses/successResponse");
 const {
   getVapidPublicKey,
+  isValidVapidPublicKey,
   saveSubscription,
   removeSubscription,
 } = require("../services/pushNotificationService");
 
-const getKey = (req, res) =>
-  res.status(200).json(new successResponse(200, "Push key fetched", { publicKey: getVapidPublicKey() }));
+const getKey = (req, res) => {
+  const publicKey = getVapidPublicKey();
+  if (!isValidVapidPublicKey(publicKey)) {
+    return res.status(503).json({
+      success: false,
+      message: "Push notifications are not configured correctly. Set a valid VAPID key pair and restart the backend.",
+    });
+  }
+  return res.status(200).json(new successResponse(200, "Push key fetched", { publicKey }));
+};
 
 const subscribe = async (req, res, next) => {
   try {

@@ -23,6 +23,7 @@ const StaticPage = require("../models/StaticPage");
 const NewsTip = require("../models/NewsTip");
 const ReporterApplication = require("../models/ReporterApplication");
 const ContactMessage = require("../models/ContactMessage");
+const PushSubscription = require("../models/PushSubscription");
 const { RANGE_DAYS } = require("../dtos/dashboardDto");
 
 const IST_TZ = "Asia/Kolkata";
@@ -559,6 +560,7 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
     usersRoles,
     editorial,
     series,
+    pushSubscriptionCount,
   ] = await Promise.all([
     getArticleStats({ todayStart, rangeFrom, rangeTo }),
     getLiveNewsStats(),
@@ -571,6 +573,7 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
     getUserRoleStats({ rangeFrom, rangeTo }),
     getEditorialWidgets(),
     getSeries({ rangeFrom, rangeTo, keys }),
+    PushSubscription.countDocuments(),
   ]);
 
   const result = {
@@ -602,6 +605,7 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
       submissions: submissions.summary,
       users: usersRoles.users,
       roles: usersRoles.roles,
+      notifications: { pushSubscriptions: pushSubscriptionCount },
     },
     series,
     editorialQueue: {
@@ -646,6 +650,7 @@ const getDashboardOverview = async ({ range = "30d", permissions = [] } = {}) =>
   if (canRead("submission:read")) summary.submissions = result.summary.submissions;
   if (canRead("user:read")) summary.users = result.summary.users;
   if (canRead("role:read")) summary.roles = result.summary.roles;
+  if (canRead("dashboard:read")) summary.notifications = result.summary.notifications;
 
   const visibleLibrary = {};
   if (canRead("media:read")) {

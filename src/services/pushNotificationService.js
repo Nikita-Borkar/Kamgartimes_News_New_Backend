@@ -3,9 +3,16 @@ const PushSubscription = require("../models/PushSubscription");
 
 const getVapidPublicKey = () => process.env.VAPID_PUBLIC_KEY || "";
 
+const isValidVapidPublicKey = (key) => {
+  if (typeof key !== "string" || !/^[A-Za-z0-9_-]+$/.test(key) || key.length % 4 === 1) return false;
+  const normalized = key.replace(/-/g, "+").replace(/_/g, "/");
+  const bytes = Buffer.from(normalized, "base64");
+  return bytes.length === 65 && bytes[0] === 4;
+};
+
 const configureWebPush = () => {
   const { VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, VAPID_SUBJECT } = process.env;
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY || !VAPID_SUBJECT) return false;
+  if (!isValidVapidPublicKey(VAPID_PUBLIC_KEY) || !VAPID_PRIVATE_KEY || !VAPID_SUBJECT) return false;
   webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY);
   return true;
 };
@@ -51,4 +58,4 @@ const sendArticleNotification = async (article) => {
   );
 };
 
-module.exports = { getVapidPublicKey, saveSubscription, removeSubscription, sendArticleNotification };
+module.exports = { getVapidPublicKey, isValidVapidPublicKey, saveSubscription, removeSubscription, sendArticleNotification };
