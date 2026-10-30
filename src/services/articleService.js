@@ -10,6 +10,7 @@ const BadRequestError = require("../errors/customErrors/BadRequestError");
 const NotFoundError = require("../errors/customErrors/NotFoundError");
 const { uploadBuffer } = require("../config/cloudinary");
 const path = require("path");
+const { sendArticleNotification } = require("./pushNotificationService");
 
 const escapeRegex = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
@@ -318,6 +319,7 @@ const updateArticleStatus = async (id, status) => {
   const article = await Article.findById(id);
   if (!article) throw new NotFoundError("Article not found");
 
+  const shouldNotify = status === "PUBLISHED" && article.status !== "PUBLISHED";
   article.status = status;
   if (status === "PUBLISHED" && !article.publishedAt) {
     article.publishedAt = new Date();
@@ -327,6 +329,12 @@ const updateArticleStatus = async (id, status) => {
   }
 
   await article.save();
+  if (shouldNotify) {
+    // Do not turn a successful publish into an API failure if push delivery has a problem.
+    sendArticleNotification(article).catch((error) =>
+      console.error("Could not send article push notifications:", error.message),
+    );
+  }
   return { id: article._id, status: article.status, publishedAt: article.publishedAt };
 };
 

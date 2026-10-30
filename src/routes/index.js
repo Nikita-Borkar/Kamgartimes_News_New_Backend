@@ -38,6 +38,7 @@ const publicPollRoutes = require("./v1/publicPoll.route");
 const submissionRoutes = require("./v1/submission.route");
 const liveNewsRoutes = require("./v1/liveNews.route");
 const publicLiveNewsRoutes = require("./v1/publicLiveNews.route");
+const pushNotificationRoutes = require("./v1/pushNotification.route");
 
 router.use("/auth", authRoutes);
 router.use("/dashboard", dashboardRoutes);
@@ -47,6 +48,7 @@ router.use("/users", userRoutes);
 router.use("/categories", categoryRoutes);
 router.use("/articles", articleRoutes);
 router.use("/public/articles", publicArticleRoutes);
+router.use("/public/push", pushNotificationRoutes);
 router.use("/media/images", imageMediaRoutes);
 router.use("/media/videos", videoMediaRoutes);
 router.use("/public/media", publicMediaRoutes);
