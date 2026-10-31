@@ -4,6 +4,9 @@ const {
   isValidVapidPublicKey,
   saveSubscription,
   removeSubscription,
+  saveMobileSubscription,
+  removeMobileSubscription,
+  sendPushNotification,
 } = require("../services/pushNotificationService");
 
 const getKey = (req, res) => {
@@ -61,4 +64,53 @@ const unsubscribe = async (req, res, next) => {
   }
 };
 
-module.exports = { getKey, subscribe, unsubscribe };
+const subscribeMobile = async (req, res, next) => {
+  try {
+    const { token, platform, deviceName } = req.body || {};
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({ success: false, message: "Device push token is required" });
+    }
+    await saveMobileSubscription({ token, platform, deviceName });
+    return res.status(201).json(new successResponse(201, "Subscribed mobile device to notifications", { subscribed: true }));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const unsubscribeMobile = async (req, res, next) => {
+  try {
+    const { token } = req.body || {};
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({ success: false, message: "Device push token is required" });
+    }
+    await removeMobileSubscription(token);
+    return res.status(200).json(new successResponse(200, "Unsubscribed mobile device", { subscribed: false }));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const testBroadcast = async (req, res, next) => {
+  try {
+    const { title, body, url, data } = req.body || {};
+    const result = await sendPushNotification({
+      title: title || "कामगार टाइम्स - Test Notification",
+      body: body || "हे एक चाचणी सूचना (Test Notification) आहे.",
+      url: url || "/",
+      data: data || {},
+    });
+    return res.status(200).json(new successResponse(200, "Push notifications broadcasted", { result }));
+  } catch (error) {
+    return next(error);
+  }
+};
+
+module.exports = {
+  getKey,
+  subscribe,
+  unsubscribe,
+  subscribeMobile,
+  unsubscribeMobile,
+  testBroadcast,
+};
+

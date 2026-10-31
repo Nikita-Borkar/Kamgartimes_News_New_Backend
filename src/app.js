@@ -37,7 +37,7 @@ const allowedOrigins = (process.env.CORS_ORIGINS || "")
 const corsOrigins =
   allowedOrigins.length ?
     [...new Set([...defaultOrigins, ...allowedOrigins])]
-  : defaultOrigins;
+    : defaultOrigins;
 
 app.use(
   cors({
