@@ -314,13 +314,14 @@ const updateArticleFlags = async (id, flags, userId) => {
   };
 };
 
-const updateArticleStatus = async (id, status) => {
+const updateArticleStatus = async (id, status, userId) => {
   assertValidId(id, "article");
   const article = await Article.findById(id);
   if (!article) throw new NotFoundError("Article not found");
 
   const shouldNotify = status === "PUBLISHED" && article.status !== "PUBLISHED";
   article.status = status;
+  if (status === "PUBLISHED") article.publishedBy = userId;
   if (status === "PUBLISHED" && !article.publishedAt) {
     article.publishedAt = new Date();
   }

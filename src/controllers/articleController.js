@@ -85,7 +85,11 @@ const updateFlags = async (req, res, next) => {
 
 const updateStatus = async (req, res, next) => {
   try {
-    const result = await updateArticleStatus(req.params.id, req.validatedBody.status);
+    const result = await updateArticleStatus(
+      req.params.id,
+      req.validatedBody.status,
+      req.user.userId,
+    );
     return res
       .status(200)
       .json(new successResponse(200, "Article status updated successfully", result));

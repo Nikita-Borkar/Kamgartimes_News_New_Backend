@@ -70,6 +70,12 @@ const articleSchema = new mongoose.Schema(
       default: null,
     },
 
+    publishedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+
     // Editorial flags for homepage curation
     isLead: { type: Boolean, default: false, index: true },
     isFeatured: { type: Boolean, default: false, index: true },

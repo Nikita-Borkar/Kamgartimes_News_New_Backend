@@ -96,7 +96,8 @@ const getPublishedArticleBySlug = async (slug) => {
   const article = await Article.findOne(filter)
     .populate("category", "name slug")
     .populate("city", "name slug")
-    .populate("author", "name");
+    .populate("author", "name")
+    .populate("publishedBy", "name");
   if (!article) throw new NotFoundError("Article not found");
   return article;
 };
