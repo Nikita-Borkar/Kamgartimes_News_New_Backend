@@ -43,16 +43,23 @@ const updateSiteSetting = async (body, file, userId) => {
       throw new BadRequestError(`Cloudinary upload failed: ${err.message}`);
     }
 
-    const variant = body.logoVariant === "dark" ? "dark" : "light";
-    const previousPublicId =
-      variant === "dark"
-        ? setting.logoDarkPublicId
-        : setting.logoLightPublicId || setting.logoPublicId;
+    const variant = String(body.logoVariant || "light").toLowerCase();
+    let previousPublicId = null;
 
-    if (variant === "dark") {
+    if (variant === "text-dark" || variant === "textdark") {
+      previousPublicId = setting.textLogoDarkPublicId;
+      setting.textLogoDarkUrl = uploaded.secure_url;
+      setting.textLogoDarkPublicId = uploaded.public_id;
+    } else if (variant === "text-light" || variant === "textlight") {
+      previousPublicId = setting.textLogoLightPublicId;
+      setting.textLogoLightUrl = uploaded.secure_url;
+      setting.textLogoLightPublicId = uploaded.public_id;
+    } else if (variant === "dark") {
+      previousPublicId = setting.logoDarkPublicId;
       setting.logoDarkUrl = uploaded.secure_url;
       setting.logoDarkPublicId = uploaded.public_id;
     } else {
+      previousPublicId = setting.logoLightPublicId || setting.logoPublicId;
       setting.logoLightUrl = uploaded.secure_url;
       setting.logoLightPublicId = uploaded.public_id;
       // Keep legacy clients and the favicon on the light-theme asset.
@@ -73,6 +80,10 @@ const updateSiteSetting = async (body, file, userId) => {
     "contactPhone",
     "address",
     "isMaintenanceMode",
+    "textLogoLightUrl",
+    "textLogoDarkUrl",
+    "logoLightUrl",
+    "logoDarkUrl",
   ];
   for (const field of updatableFields) {
     if (body[field] !== undefined) {

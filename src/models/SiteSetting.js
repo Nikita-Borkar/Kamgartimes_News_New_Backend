@@ -35,6 +35,10 @@ const siteSettingSchema = new mongoose.Schema(
     logoLightPublicId: { type: String, trim: true, default: "" },
     logoDarkUrl: { type: String, trim: true, default: "" },
     logoDarkPublicId: { type: String, trim: true, default: "" },
+    textLogoLightUrl: { type: String, trim: true, default: "" },
+    textLogoLightPublicId: { type: String, trim: true, default: "" },
+    textLogoDarkUrl: { type: String, trim: true, default: "" },
+    textLogoDarkPublicId: { type: String, trim: true, default: "" },
     socialLinks: {
       type: [socialLinkSchema],
       default: [],

@@ -7,7 +7,12 @@ const socialLinkSchema = z.object({
 });
 
 const updateSiteSettingSchema = z.object({
-  logoVariant: z.enum(["light", "dark"]).optional(),
+  logoVariant: z.enum(["light", "dark", "text-light", "text-dark", "textLight", "textDark"]).optional(),
+  textLogoLightUrl: z.string().optional().nullable(),
+  textLogoDarkUrl: z.string().optional().nullable(),
+  logoLightUrl: z.string().optional().nullable(),
+  logoDarkUrl: z.string().optional().nullable(),
+  logoUrl: z.string().optional().nullable(),
   siteName: z.string().nonempty().max(100).optional(),
   tagline: z.string().max(200).optional(),
   contactEmail: z
