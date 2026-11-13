@@ -70,7 +70,11 @@ const getAdsForSlot = async (slotKey) => {
 
   const ads = [];
   let index = 0;
-  while (ads.length < slot.maxAds && index < candidates.length) {
+  // If multiple campaigns are assigned to the same slot, allow serving all active
+  // candidate ads (up to 20) so the frontend can rotate / auto-slide between them.
+  const maxAllowedAds = Math.max(slot.maxAds || 1, 20);
+
+  while (ads.length < maxAllowedAds && index < candidates.length) {
     const priority = candidates[index].adCampaign.priority;
     const group = [];
     while (index < candidates.length && candidates[index].adCampaign.priority === priority) {
@@ -78,12 +82,14 @@ const getAdsForSlot = async (slotKey) => {
       index += 1;
     }
     for (const placement of weightedShuffle(group)) {
-      if (ads.length >= slot.maxAds) break;
+      if (ads.length >= maxAllowedAds) break;
       ads.push({
         adCampaignId: placement.adCampaign._id,
         adSlotId: slot._id,
         title: placement.adCampaign.title,
-        imageUrl: placement.adCampaign.imageUrl,
+        mediaType: placement.adCampaign.mediaType || (placement.adCampaign.videoUrl ? "VIDEO" : "IMAGE"),
+        imageUrl: placement.adCampaign.imageUrl || "",
+        videoUrl: placement.adCampaign.videoUrl || "",
         imageAlt: placement.adCampaign.imageAlt || placement.adCampaign.title,
         clickUrl: placement.adCampaign.clickUrl,
         target: placement.adCampaign.target,

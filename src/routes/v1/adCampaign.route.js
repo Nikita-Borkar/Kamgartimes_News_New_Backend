@@ -10,7 +10,7 @@ const {
 } = require("../../controllers/adCampaignController");
 const validate = require("../../middlewares/validate");
 const authenticate = require("../../middlewares/authMiddleware");
-const uploadImage = require("../../middlewares/uploadImage");
+const uploadAdMedia = require("../../middlewares/uploadAdMedia");
 const { loadPermissions, requirePermission } = require("../../middlewares/permissionMiddleware");
 const {
   createAdCampaignSchema,
@@ -140,7 +140,7 @@ router.post(
   authenticate,
   loadPermissions,
   requirePermission("ad:create"),
-  uploadImage,
+  uploadAdMedia,
   validate(createAdCampaignSchema),
   create
 );
@@ -149,7 +149,7 @@ router.put(
   authenticate,
   loadPermissions,
   requirePermission("ad:update"),
-  uploadImage,
+  uploadAdMedia,
   validate(updateAdCampaignSchema),
   update
 );

@@ -15,7 +15,7 @@ const createAdSlotSchema = z.object({
   size: sizeSchema,
   position: intish(-100, 100).default(0),
   isActive: booleanish.default(true),
-  maxAds: intish(1, 10).default(1),
+  maxAds: intish(1, 20).default(5),
 });
 
 const updateAdSlotSchema = z.object({
@@ -25,7 +25,7 @@ const updateAdSlotSchema = z.object({
   size: sizeSchema.optional(),
   position: intish(-100, 100),
   isActive: booleanish,
-  maxAds: intish(1, 10),
+  maxAds: intish(1, 20),
 });
 
 const adSlotQuerySchema = z.object({

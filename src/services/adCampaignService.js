@@ -47,23 +47,79 @@ const getAdCampaignById = async (id) => {
   return campaign;
 };
 
-const uploadCampaignImage = async (file) => {
-  if (!file || !file.buffer) throw new BadRequestError("Campaign image file is required");
+const uploadCampaignMedia = async (file, isVideo = false) => {
+  if (!file || !file.buffer) throw new BadRequestError("Campaign media file is required");
   try {
-    return await uploadBuffer(file.buffer, { folder: "kamgartimes/ads" });
+    return await uploadBuffer(file.buffer, {
+      folder: "kamgartimes/ads",
+      resource_type: isVideo ? "video" : "image",
+    });
   } catch (err) {
     throw new BadRequestError(`Cloudinary upload failed: ${err.message}`);
   }
 };
 
 const createAdCampaign = async (file, body, userId) => {
-  const { title, clickUrl, imageAlt, target, priority, isActive, startDate, endDate } = body;
+  const {
+    title,
+    clickUrl,
+    imageAlt,
+    target,
+    priority,
+    isActive,
+    startDate,
+    endDate,
+    mediaType: rawMediaType,
+    videoUrl: rawVideoUrl,
+  } = body;
 
   assertValidWindow(startDate, endDate);
 
-  const uploaded = await uploadCampaignImage(file);
+  const mediaType = (rawMediaType || "IMAGE").toUpperCase() === "VIDEO" ? "VIDEO" : "IMAGE";
+  const videoUrl = rawVideoUrl ? String(rawVideoUrl).trim() : "";
+
+  let uploaded = null;
+  let isVideoUpload = false;
+
+  if (file && file.buffer) {
+    isVideoUpload = (file.mimetype && file.mimetype.startsWith("video/")) || mediaType === "VIDEO";
+    uploaded = await uploadCampaignMedia(file, isVideoUpload);
+  } else if (mediaType === "VIDEO" && videoUrl) {
+    // Direct video URL without file upload
+  } else {
+    throw new BadRequestError("Campaign media file (image or video) or video URL is required");
+  }
 
   try {
+    let finalMediaType = mediaType;
+    let finalImageUrl = "";
+    let finalVideoUrl = videoUrl;
+    let finalPublicId = "";
+    let finalVideoPublicId = "";
+    let imageWidth = null;
+    let imageHeight = null;
+
+    if (uploaded) {
+      if (isVideoUpload) {
+        finalMediaType = "VIDEO";
+        finalVideoUrl = uploaded.secure_url;
+        finalVideoPublicId = uploaded.public_id;
+        finalImageUrl = uploaded.secure_url.replace(/\.[^.]+$/, ".jpg");
+        imageWidth = uploaded.width || null;
+        imageHeight = uploaded.height || null;
+      } else {
+        finalMediaType = "IMAGE";
+        finalImageUrl = uploaded.secure_url;
+        finalPublicId = uploaded.public_id;
+        imageWidth = uploaded.width || null;
+        imageHeight = uploaded.height || null;
+      }
+    } else {
+      finalMediaType = "VIDEO";
+      finalVideoUrl = videoUrl;
+      finalImageUrl = videoUrl;
+    }
+
     return await AdCampaign.create({
       title,
       clickUrl,
@@ -73,15 +129,19 @@ const createAdCampaign = async (file, body, userId) => {
       isActive: isActive !== undefined ? isActive : true,
       startDate: startDate || null,
       endDate: endDate || null,
-      imageUrl: uploaded.secure_url,
-      cloudinaryPublicId: uploaded.public_id,
-      imageWidth: uploaded.width || null,
-      imageHeight: uploaded.height || null,
+      mediaType: finalMediaType,
+      imageUrl: finalImageUrl,
+      videoUrl: finalVideoUrl,
+      cloudinaryPublicId: finalPublicId,
+      cloudinaryVideoPublicId: finalVideoPublicId,
+      imageWidth,
+      imageHeight,
       createdBy: userId,
     });
   } catch (err) {
-    // Don't leave an orphaned Cloudinary asset if the DB write fails
-    await destroyAsset(uploaded.public_id, "image").catch(() => {});
+    if (uploaded) {
+      await destroyAsset(uploaded.public_id, isVideoUpload ? "video" : "image").catch(() => {});
+    }
     throw err;
   }
 };
@@ -91,18 +151,37 @@ const updateAdCampaign = async (id, body, userId, file) => {
   const campaign = await AdCampaign.findById(id);
   if (!campaign) throw new NotFoundError("Ad campaign not found");
 
-  const { title, clickUrl, imageAlt, target, priority, isActive, startDate, endDate } = body;
+  const {
+    title,
+    clickUrl,
+    imageAlt,
+    target,
+    priority,
+    isActive,
+    startDate,
+    endDate,
+    mediaType: rawMediaType,
+    videoUrl: rawVideoUrl,
+  } = body;
 
   const nextStartsAt = startDate !== undefined ? startDate : campaign.startDate;
   const nextEndsAt = endDate !== undefined ? endDate : campaign.endDate;
   assertValidWindow(nextStartsAt, nextEndsAt);
 
   let uploaded = null;
+  let isVideoUpload = false;
+
+  const targetMediaType = rawMediaType
+    ? (String(rawMediaType).trim().toUpperCase() === "VIDEO" ? "VIDEO" : "IMAGE")
+    : campaign.mediaType || "IMAGE";
+
   if (file && file.buffer) {
-    uploaded = await uploadCampaignImage(file);
+    isVideoUpload = (file.mimetype && file.mimetype.startsWith("video/")) || targetMediaType === "VIDEO";
+    uploaded = await uploadCampaignMedia(file, isVideoUpload);
   }
 
   const previousPublicId = campaign.cloudinaryPublicId;
+  const previousVideoPublicId = campaign.cloudinaryVideoPublicId;
 
   try {
     if (title !== undefined) campaign.title = title;
@@ -113,24 +192,44 @@ const updateAdCampaign = async (id, body, userId, file) => {
     if (isActive !== undefined) campaign.isActive = isActive;
     if (startDate !== undefined) campaign.startDate = startDate;
     if (endDate !== undefined) campaign.endDate = endDate;
+    if (rawMediaType !== undefined) campaign.mediaType = targetMediaType;
+    if (rawVideoUrl !== undefined) campaign.videoUrl = String(rawVideoUrl).trim();
 
     if (uploaded) {
-      campaign.imageUrl = uploaded.secure_url;
-      campaign.cloudinaryPublicId = uploaded.public_id;
-      campaign.imageWidth = uploaded.width || null;
-      campaign.imageHeight = uploaded.height || null;
+      if (isVideoUpload) {
+        campaign.mediaType = "VIDEO";
+        campaign.videoUrl = uploaded.secure_url;
+        campaign.cloudinaryVideoPublicId = uploaded.public_id;
+        campaign.imageUrl = uploaded.secure_url.replace(/\.[^.]+$/, ".jpg");
+        campaign.imageWidth = uploaded.width || null;
+        campaign.imageHeight = uploaded.height || null;
+      } else {
+        campaign.mediaType = "IMAGE";
+        campaign.imageUrl = uploaded.secure_url;
+        campaign.cloudinaryPublicId = uploaded.public_id;
+        campaign.videoUrl = "";
+        campaign.imageWidth = uploaded.width || null;
+        campaign.imageHeight = uploaded.height || null;
+      }
     }
 
     campaign.updatedBy = userId;
     await campaign.save();
   } catch (err) {
-    if (uploaded) await destroyAsset(uploaded.public_id, "image").catch(() => {});
+    if (uploaded) {
+      await destroyAsset(uploaded.public_id, isVideoUpload ? "video" : "image").catch(() => {});
+    }
     throw err;
   }
 
-  // Old asset is only removed once the new one is safely persisted
-  if (uploaded && previousPublicId) {
-    await destroyAsset(previousPublicId, "image").catch(() => {});
+  // Clean up previous assets if new upload succeeded
+  if (uploaded) {
+    if (isVideoUpload && previousVideoPublicId && previousVideoPublicId !== uploaded.public_id) {
+      await destroyAsset(previousVideoPublicId, "video").catch(() => {});
+    }
+    if (!isVideoUpload && previousPublicId && previousPublicId !== uploaded.public_id) {
+      await destroyAsset(previousPublicId, "image").catch(() => {});
+    }
   }
 
   return campaign;

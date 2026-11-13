@@ -17,13 +17,26 @@ const clickUrl = z
     "Must be an http(s) URL or a path starting with /",
   );
 
-// The image file itself is handled by the upload middleware and checked
+const mediaTypeField = z.preprocess((val) => {
+  if (!val) return "IMAGE";
+  const str = String(val).trim().toUpperCase();
+  return str === "VIDEO" ? "VIDEO" : "IMAGE";
+}, z.enum(["IMAGE", "VIDEO"]));
+
+const videoUrlField = z.preprocess(
+  (val) => (val === null || val === undefined ? "" : String(val).trim()),
+  z.string().max(1000).optional(),
+);
+
+// The image/video file itself is handled by the upload middleware and checked
 // in the service — these schemas validate the accompanying text fields,
 // which arrive as strings on multipart requests.
 const createAdCampaignSchema = z.object({
   title: z.string().min(1).max(200),
   clickUrl,
   imageAlt: z.string().max(300).default(""),
+  mediaType: mediaTypeField.default("IMAGE"),
+  videoUrl: videoUrlField.default(""),
   target: enumish(["_blank", "_self"]).default("_blank"),
   priority: intish(-1000, 1000).default(0),
   isActive: booleanish.default(true),
@@ -35,6 +48,8 @@ const updateAdCampaignSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   clickUrl: clickUrl.optional(),
   imageAlt: z.string().max(300).optional(),
+  mediaType: mediaTypeField.optional(),
+  videoUrl: videoUrlField.optional(),
   target: enumish(["_blank", "_self"]),
   priority: intish(-1000, 1000),
   isActive: booleanish,

@@ -18,9 +18,21 @@ const adCampaignSchema = new mongoose.Schema(
       maxlength: 500,
     },
 
+    mediaType: {
+      type: String,
+      enum: ["IMAGE", "VIDEO"],
+      default: "IMAGE",
+    },
+
     imageUrl: {
       type: String,
-      required: [true, "Campaign image is required"],
+      default: "",
+    },
+
+    videoUrl: {
+      type: String,
+      trim: true,
+      default: "",
     },
 
     imageAlt: {
@@ -58,6 +70,11 @@ const adCampaignSchema = new mongoose.Schema(
     },
 
     cloudinaryPublicId: {
+      type: String,
+      default: "",
+    },
+
+    cloudinaryVideoPublicId: {
       type: String,
       default: "",
     },
