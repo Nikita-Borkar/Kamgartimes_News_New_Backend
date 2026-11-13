@@ -24,6 +24,7 @@ router.get("/", (req, res) => {
     success: true,
     statusCode: 200,
     message: "Kamagar Times API is running",
+    features: { videoAds: true },
   });
 });
 

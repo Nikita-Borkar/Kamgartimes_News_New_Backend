@@ -5,10 +5,11 @@ const BadRequestError = require("../errors/customErrors/BadRequestError");
 // no temp files on disk.
 const imageUpload = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10 MB
+  limits: { fileSize: 60 * 1024 * 1024 }, // 60 MB
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype || !file.mimetype.startsWith("image/")) {
-      return cb(new BadRequestError("Only image files are allowed"));
+    const mime = file.mimetype || "";
+    if (!mime.startsWith("image/") && !mime.startsWith("video/")) {
+      return cb(new BadRequestError("Only image and video files are allowed"));
     }
     cb(null, true);
   },
@@ -20,7 +21,7 @@ const uploadImage = (req, res, next) => {
     if (err) {
       if (err instanceof multer.MulterError) {
         if (err.code === "LIMIT_FILE_SIZE") {
-          return next(new BadRequestError("Image too large (max 10 MB)"));
+          return next(new BadRequestError("File too large (max 60 MB)"));
         }
         return next(new BadRequestError(err.message));
       }
